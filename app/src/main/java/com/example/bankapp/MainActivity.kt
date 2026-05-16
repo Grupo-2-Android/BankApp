@@ -12,9 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.bankapp.presentation.screens.LoginScreen
-import com.example.bankapp.presentation.screens.DashboardScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bankapp.presentation.screens.*
 import com.example.bankapp.presentation.theme.BankAppTheme
+import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BankAppTheme {
                 val navController = rememberNavController()
+                val cryptoViewModel: CryptoViewModel = viewModel()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -35,7 +37,25 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                             composable("dashboard") {
-                                DashboardScreen()
+                                DashboardScreen(onNavigateToCryptos = {
+                                    navController.navigate("crypto_list")
+                                })
+                            }
+                            composable("crypto_list") {
+                                CryptoListScreen(
+                                    viewModel = cryptoViewModel,
+                                    onCryptoClick = { cryptoId ->
+                                        navController.navigate("crypto_detail/$cryptoId")
+                                    }
+                                )
+                            }
+                            composable("crypto_detail/{cryptoId}") { backStackEntry ->
+                                val cryptoId = backStackEntry.arguments?.getString("cryptoId") ?: ""
+                                CryptoDetailScreen(
+                                    cryptoId = cryptoId,
+                                    viewModel = cryptoViewModel,
+                                    onBack = { navController.popBackStack() }
+                                )
                             }
                         }
                     }
