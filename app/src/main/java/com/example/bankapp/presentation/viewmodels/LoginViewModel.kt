@@ -18,19 +18,14 @@ class LoginViewModel(private val repository: ApiRepository = ApiRepository()) : 
         viewModelScope.launch {
             _loginState.value = LoginStatus.Loading
             try {
-                Log.d("LOGIN_VIEWMODEL", "Iniciando login")
                 val request = LoginRequest(login = username, password = password)
-                Log.d("LOGIN_VIEWMODEL", "antes do response")
                 val response = repository.fetchLogin(request)
-                Log.d("LOGIN_VIEWMODEL", "Resposta recebida: ${response.message}")
-                
                 if (response.message == "Login realizado com sucesso") {
                     _loginState.value = LoginStatus.Success
                 } else {
                     _loginState.value = LoginStatus.Error(response.message)
                 }
             } catch (e: Exception) {
-                Log.d("LOGIN_VIEWMODEL", "Ocorreu um erro")
                 _loginState.value = LoginStatus.Error(e.message ?: "Ocorreu um erro")
             }
         }

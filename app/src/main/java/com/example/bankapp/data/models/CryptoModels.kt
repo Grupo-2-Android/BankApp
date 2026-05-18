@@ -11,3 +11,16 @@ data class CryptoItem(
     val ohlc_available_from: String,
     val history_available_from: String
 )
+
+data class CryptoDataResponse(
+    val symbols: List<CryptoDetail>
+)
+
+data class CryptoDetail(
+    val symbol: String,
+    val last: String,
+    val last_btc: String,
+    val lowest: String,
+    val highest: String,
+    val date: String
+)

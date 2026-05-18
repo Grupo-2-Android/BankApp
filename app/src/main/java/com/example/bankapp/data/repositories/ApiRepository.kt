@@ -1,5 +1,6 @@
 package com.example.bankapp.data.repositories
 
+import com.example.bankapp.data.models.CryptoDataResponse
 import com.example.bankapp.data.models.CryptoListResponse
 import com.example.bankapp.data.models.LoginRequest
 import com.example.bankapp.data.models.LoginResponse
@@ -12,5 +13,9 @@ class ApiRepository {
 
     suspend fun getCryptoList(): CryptoListResponse {
         return RetrofitInstance.api.getCryptoList()
+    }
+
+    suspend fun getCryptoData(symbol: String): CryptoDataResponse {
+        return RetrofitInstance.api.getCryptoData(symbol)
     }
 }
