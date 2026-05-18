@@ -14,6 +14,9 @@ class LoginViewModel(private val repository: ApiRepository = ApiRepository()) : 
     private val _loginState = MutableStateFlow<LoginStatus>(LoginStatus.Idle)
     val loginState: StateFlow<LoginStatus> = _loginState
 
+    var userName: String = ""
+        private set
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginStatus.Loading
@@ -21,6 +24,7 @@ class LoginViewModel(private val repository: ApiRepository = ApiRepository()) : 
                 val request = LoginRequest(login = username, password = password)
                 val response = repository.fetchLogin(request)
                 if (response.message == "Login realizado com sucesso") {
+                    userName = response.name ?: ""
                     _loginState.value = LoginStatus.Success
                 } else {
                     _loginState.value = LoginStatus.Error(response.message)

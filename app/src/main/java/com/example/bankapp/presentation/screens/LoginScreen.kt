@@ -20,7 +20,7 @@ import com.example.bankapp.presentation.viewmodels.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (String) -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
     var username by remember { mutableStateOf("") }
@@ -29,7 +29,7 @@ fun LoginScreen(
 
     LaunchedEffect(loginState) {
         if (loginState is LoginStatus.Success) {
-            onLoginSuccess()
+            onLoginSuccess(viewModel.userName)
             viewModel.resetState()
         }
     }

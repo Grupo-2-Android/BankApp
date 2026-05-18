@@ -30,16 +30,20 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavHost(navController = navController, startDestination = "login") {
                             composable("login") {
-                                LoginScreen(onLoginSuccess = {
-                                    navController.navigate("dashboard") {
+                                LoginScreen(onLoginSuccess = { name ->
+                                    navController.navigate("dashboard/$name") {
                                         popUpTo("login") { inclusive = true }
                                     }
                                 })
                             }
-                            composable("dashboard") {
-                                DashboardScreen(onNavigateToCryptos = {
-                                    navController.navigate("crypto_list")
-                                })
+                            composable("dashboard/{userName}") { backStackEntry ->
+                                val userName = backStackEntry.arguments?.getString("userName") ?: ""
+                                DashboardScreen(
+                                    userName = userName,
+                                    onNavigateToCryptos = {
+                                        navController.navigate("crypto_list")
+                                    }
+                                )
                             }
                             composable("crypto_list") {
                                 CryptoListScreen(

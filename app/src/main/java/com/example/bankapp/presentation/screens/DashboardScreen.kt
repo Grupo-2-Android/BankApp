@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DashboardScreen(onNavigateToCryptos: () -> Unit) {
+fun DashboardScreen(userName: String, onNavigateToCryptos: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
@@ -24,6 +24,14 @@ fun DashboardScreen(onNavigateToCryptos: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = "Olá, $userName!",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
             Text(
                 text = "Dashboard",
                 style = MaterialTheme.typography.headlineLarge,
