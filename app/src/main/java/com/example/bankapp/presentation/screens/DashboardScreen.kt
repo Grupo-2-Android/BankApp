@@ -12,7 +12,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DashboardScreen(userName: String, onNavigateToCryptos: () -> Unit) {
+fun DashboardScreen(
+    userName: String,
+    onNavigateToCryptos: () -> Unit,
+    onNavigateToMyCryptos: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
@@ -42,20 +46,24 @@ fun DashboardScreen(userName: String, onNavigateToCryptos: () -> Unit) {
 
             Button(
                 onClick = onNavigateToCryptos,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50),
-                    contentColor = Color.White
-                ),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(
-                    text = "Cryptos",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
+                Text("Cryptos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Este botão é temporário na Dashboard.
+            // Mais para frente, esta ação será movida para a Sidebar (Navigation Drawer).
+            Button(
+                onClick = onNavigateToMyCryptos,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Minhas Cryptos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
         }
     }
