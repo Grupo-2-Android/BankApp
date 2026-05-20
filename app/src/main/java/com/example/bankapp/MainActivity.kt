@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bankapp.data.local.datastore.UserPreferences
+import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.presentation.screens.*
 import com.example.bankapp.presentation.theme.BankAppTheme
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
+import com.example.bankapp.presentation.viewmodels.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,22 +29,29 @@ class MainActivity : ComponentActivity() {
         setContent {
             BankAppTheme {
                 val navController = rememberNavController()
-                val cryptoViewModel: CryptoViewModel = viewModel()
+                val context = LocalContext.current
+                val userPreferences = remember { UserPreferences(context) }
+                val database = remember { AppDatabase.getDatabase(context) }
+                val factory = remember { ViewModelFactory(userPreferences, database) }
+                
+                val cryptoViewModel: CryptoViewModel = viewModel(factory = factory)
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavHost(navController = navController, startDestination = "login") {
                             composable("login") {
-                                LoginScreen(onLoginSuccess = { name ->
-                                    navController.navigate("dashboard/$name") {
-                                        popUpTo("login") { inclusive = true }
+                                LoginScreen(
+                                    viewModel = viewModel(factory = factory),
+                                    onLoginSuccess = { name ->
+                                        navController.navigate("dashboard") {
+                                            popUpTo("login") { inclusive = true }
+                                        }
                                     }
-                                })
+                                )
                             }
-                            composable("dashboard/{userName}") { backStackEntry ->
-                                val userName = backStackEntry.arguments?.getString("userName") ?: ""
+                            composable("dashboard") {
                                 DashboardScreen(
-                                    userName = userName,
+                                    viewModel = viewModel(factory = factory),
                                     onNavigateToCryptos = {
                                         navController.navigate("crypto_list")
                                     }
