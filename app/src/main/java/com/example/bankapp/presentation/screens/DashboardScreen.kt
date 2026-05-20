@@ -10,13 +10,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.bankapp.presentation.viewmodels.DashboardViewModel
+import java.util.Locale
 
 @Composable
 fun DashboardScreen(
-    userName: String,
+    viewModel: DashboardViewModel,
     onNavigateToCryptos: () -> Unit,
-    onNavigateToMyCryptos: () -> Unit
+    onNavigateToMyCryptos: () -> Unit = {}
 ) {
+    val userAccount by viewModel.userAccount.collectAsState()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Black
@@ -28,13 +34,23 @@ fun DashboardScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Olá, $userName!",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            userAccount?.let { account ->
+                Text(
+                    text = "Olá, ${account.name}!",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = "Saldo: R$ ${String.format(Locale("pt", "BR"), "%,.2f", account.balance)}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF4CAF50),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 32.dp)
+                )
+            }
 
             Text(
                 text = "Dashboard",
