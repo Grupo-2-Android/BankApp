@@ -20,17 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     userName: String,
-    navController: NavController,
     onNavigateToCryptos: () -> Unit,
-    onNavigateToMyCryptos: () -> Unit
+    onNavigateToMyCryptos: () -> Unit,
+    onLogout: () -> Unit // ✅ novo parâmetro
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -96,9 +94,9 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = Color.Gray)
 
-                // ✅ empurra o botão "Sair" para o final
                 Spacer(modifier = Modifier.weight(1f))
 
+                // ✅ botão de logout chama a função passada pelo MainActivity
                 NavigationDrawerItem(
                     label = { Text("Sair", color = Color.White) },
                     selected = false,
@@ -111,12 +109,7 @@ fun DashboardScreen(
                     },
                     onClick = {
                         scope.launch { drawerState.close() }
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Usuário deslogado com sucesso")
-                        }
-                        navController.navigate("login") {
-                            popUpTo("dashboard") { inclusive = true }
-                        }
+                        onLogout()
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
@@ -206,13 +199,3 @@ fun DashboardScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DashboardScreenPreview() {
-    DashboardScreen(
-        userName = "Usuário Teste",
-        navController = rememberNavController(),
-        onNavigateToCryptos = {},
-        onNavigateToMyCryptos = {}
-    )
-}
