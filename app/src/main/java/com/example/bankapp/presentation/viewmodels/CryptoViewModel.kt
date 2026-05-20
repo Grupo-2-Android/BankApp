@@ -2,13 +2,22 @@ package com.example.bankapp.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bankapp.data.local.datastore.UserPreferences
+import com.example.bankapp.data.local.room.AppDatabase
+import com.example.bankapp.data.local.room.entities.CryptoAsset
+import com.example.bankapp.data.local.room.entities.Transaction
 import com.example.bankapp.data.models.CryptoItem
 import com.example.bankapp.data.repositories.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class CryptoViewModel(private val repository: ApiRepository = ApiRepository()) : ViewModel() {
+class CryptoViewModel(
+    private val repository: ApiRepository = ApiRepository(),
+    private val userPreferences: UserPreferences,
+    private val database: AppDatabase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CryptoUiState>(CryptoUiState.Loading)
     val uiState: StateFlow<CryptoUiState> = _uiState
@@ -54,6 +63,49 @@ class CryptoViewModel(private val repository: ApiRepository = ApiRepository()) :
 
     fun getCryptoById(id: String): com.example.bankapp.data.models.CryptoItem? {
         return _allCryptos.find { it.id == id }
+    }
+
+    fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
+        viewModelScope.launch {
+            val userId = userPreferences.userId.first() ?: return@launch
+            val totalCost = amount * price
+
+            val dao = database.bankDao()
+            val user = dao.getUserById(userId) ?: return@launch
+
+            if (user.balance >= totalCost) {
+                // Update Balance
+                val updatedUser = user.copy(balance = user.balance - totalCost)
+                dao.updateUser(updatedUser)
+
+                // Add Transaction
+                dao.insertTransaction(
+                    Transaction(
+                        userId = userId,
+                        amount = totalCost,
+                        description = "Compra de $amount $symbol",
+                        date = System.currentTimeMillis(),
+                        operation = "BUY"
+                    )
+                )
+
+                // Update Crypto Assets
+                val existingAssets = dao.getCryptoAssetsByUser(userId).first()
+                val asset = existingAssets.find { it.cryptoId == cryptoId }
+                if (asset != null) {
+                    dao.upsertCryptoAsset(asset.copy(amount = asset.amount + amount))
+                } else {
+                    dao.upsertCryptoAsset(
+                        CryptoAsset(
+                            userId = userId,
+                            cryptoId = cryptoId,
+                            symbol = symbol,
+                            amount = amount
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 

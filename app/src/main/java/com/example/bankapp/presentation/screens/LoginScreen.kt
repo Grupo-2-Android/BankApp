@@ -29,7 +29,7 @@ fun LoginScreen(
 
     LaunchedEffect(loginState) {
         if (loginState is LoginStatus.Success) {
-            onLoginSuccess(viewModel.userName)
+            onLoginSuccess("")
             viewModel.resetState()
         }
     }
