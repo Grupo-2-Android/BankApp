@@ -19,30 +19,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     userName: String,
+    navController: NavController,
     onNavigateToCryptos: () -> Unit,
-    onNavigateToMyCryptos: () -> Unit,
-    onLogout: () -> Unit
+    onNavigateToMyCryptos: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxHeight(),
-                drawerContainerColor = Color(0xFF1E1E1E) // ✅ fundo cinza escuro
+                drawerContainerColor = Color(0xFF1E1E1E)
             ) {
-
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ✅ Header
                 Text(
                     text = "Olá, $userName",
                     color = Color.White,
@@ -55,14 +57,12 @@ fun DashboardScreen(
                     text = "Menu",
                     modifier = Modifier.padding(horizontal = 16.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4CAF50) // ✅ verde
+                    color = Color(0xFF4CAF50)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = Color.Gray)
 
-                Divider(color = Color.Gray)
-
-                // ✅ Cryptos
                 NavigationDrawerItem(
                     label = { Text("Cryptos", color = Color.White) },
                     selected = false,
@@ -78,7 +78,6 @@ fun DashboardScreen(
                     )
                 )
 
-                // ✅ Minhas Cryptos
                 NavigationDrawerItem(
                     label = { Text("Minhas Cryptos", color = Color.White) },
                     selected = false,
@@ -95,10 +94,11 @@ fun DashboardScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = Color.Gray)
 
-                Divider(color = Color.Gray)
+                // ✅ empurra o botão "Sair" para o final
+                Spacer(modifier = Modifier.weight(1f))
 
-                // ✅ Logout
                 NavigationDrawerItem(
                     label = { Text("Sair", color = Color.White) },
                     selected = false,
@@ -106,12 +106,17 @@ fun DashboardScreen(
                         Icon(
                             Icons.Default.ExitToApp,
                             contentDescription = "Logout",
-                            tint = Color(0xFF4CAF50) // ✅ ícone verde
+                            tint = Color(0xFF4CAF50)
                         )
                     },
                     onClick = {
                         scope.launch { drawerState.close() }
-                        onLogout()
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Usuário deslogado com sucesso")
+                        }
+                        navController.navigate("login") {
+                            popUpTo("dashboard") { inclusive = true }
+                        }
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
@@ -123,23 +128,26 @@ fun DashboardScreen(
             }
         }
     ) {
-
         Scaffold(
             containerColor = Color.Black,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
-                    title = { Text("Dashboard") },
+                    title = { Text("Dashboard", color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
                         }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Black,
+                        titleContentColor = Color.White
+                    )
                 )
             }
         ) { padding ->
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -148,7 +156,6 @@ fun DashboardScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
                 Text(
                     text = "Olá, $userName!",
                     style = MaterialTheme.typography.headlineMedium,
@@ -197,4 +204,15 @@ fun DashboardScreen(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DashboardScreenPreview() {
+    DashboardScreen(
+        userName = "Usuário Teste",
+        navController = rememberNavController(),
+        onNavigateToCryptos = {},
+        onNavigateToMyCryptos = {}
+    )
 }
