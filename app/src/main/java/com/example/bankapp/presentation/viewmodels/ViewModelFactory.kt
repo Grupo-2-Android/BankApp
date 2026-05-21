@@ -22,6 +22,10 @@ class ViewModelFactory(
             @Suppress("UNCHECKED_CAST")
             return CryptoViewModel(userPreferences = userPreferences, database = database) as T
         }
+        if (modelClass.isAssignableFrom(MyPortfolioViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MyPortfolioViewModel(userPreferences = userPreferences, database = database) as T
+        }
         if (modelClass.isAssignableFrom(TransactionHistoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return TransactionHistoryViewModel(userPreferences = userPreferences, database = database) as T

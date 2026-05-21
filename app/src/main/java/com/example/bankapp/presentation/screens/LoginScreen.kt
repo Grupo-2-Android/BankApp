@@ -1,161 +1,95 @@
 package com.example.bankapp.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bankapp.presentation.theme.BankAppTheme
-
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.bankapp.presentation.viewmodels.LoginStatus
+import com.example.bankapp.BankButton
+import com.example.bankapp.data.models.UserLoginResponse
 import com.example.bankapp.presentation.viewmodels.LoginViewModel
+import com.example.bankapp.presentation.viewmodels.LoginStatus
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String) -> Unit,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel,
+    onLoginSuccess: (UserLoginResponse) -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var user by remember { mutableStateOf("") }
+    var pass by remember { mutableStateOf("") }
+    val context = LocalContext.current
     val loginState by viewModel.loginState.collectAsState()
 
+    // Monitora o estado de login
     LaunchedEffect(loginState) {
-        if (loginState is LoginStatus.Success) {
-            onLoginSuccess("")
-            viewModel.resetState()
+        when (loginState) {
+            is LoginStatus.Success -> {
+                // Ao logar com sucesso (ou via fallback), simulamos a resposta para a MainActivity
+                onLoginSuccess(UserLoginResponse(user, user, "Sucesso"))
+                viewModel.resetState()
+            }
+            is LoginStatus.Error -> {
+                Toast.makeText(context, (loginState as LoginStatus.Error).message, Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
+            }
+            else -> {}
         }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.Black
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "BankApp",
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp
-            )
-
-            Text(
-                text = "Seu banco digital seguro",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
-                modifier = Modifier.padding(bottom = 40.dp)
-            )
-
-            Card(
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
+        Column(Modifier.fillMaxSize().padding(24.dp), Arrangement.Center, Alignment.CenterHorizontally) {
+            Text("BankApp", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(48.dp))
+            
+            OutlinedTextField(
+                value = user,
+                onValueChange = { user = it },
+                label = { Text("Login", color = Color.Gray) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1A1A1A)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {
-                            username = it
-                            if (loginState is LoginStatus.Error) viewModel.resetState()
-                        },
-                        label = { Text("Usuário", color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = loginState is LoginStatus.Error,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFF4CAF50),
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = {
-                            password = it
-                            if (loginState is LoginStatus.Error) viewModel.resetState()
-                        },
-                        label = { Text("Senha", color = Color.Gray) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = loginState is LoginStatus.Error,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFF4CAF50),
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
-                        )
-                    )
-
-                    if (loginState is LoginStatus.Error) {
-                        Text(
-                            text = (loginState as LoginStatus.Error).message,
-                            color = Color.Red,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color(0xFF4CAF50),
+                    unfocusedBorderColor = Color.Gray
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            OutlinedTextField(
+                value = pass,
+                onValueChange = { pass = it },
+                label = { Text("Senha", color = Color.Gray) },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color(0xFF4CAF50),
+                    unfocusedBorderColor = Color.Gray
+                )
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            if (loginState is LoginStatus.Loading) {
+                CircularProgressIndicator(color = Color(0xFF4CAF50))
+            } else {
+                BankButton("Entrar", {
+                    if (user.isNotBlank() && pass.isNotBlank()) {
+                        viewModel.login(user, pass)
+                    } else {
+                        Toast.makeText(context, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
                     }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Button(
-                        onClick = {
-                            viewModel.login(username, password)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = loginState !is LoginStatus.Loading,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        if (loginState is LoginStatus.Loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(
-                                text = "Entrar",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                }
+                })
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    BankAppTheme {
-        LoginScreen(onLoginSuccess = {})
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bankapp.data.models.CryptoModel
 import com.example.bankapp.presentation.viewmodels.CryptoDetailUiState
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 
@@ -19,7 +20,8 @@ import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 fun CryptoDetailScreen(
     cryptoId: String,
     viewModel: CryptoViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onBuy: (CryptoModel) -> Unit
 ) {
     val crypto = viewModel.getCryptoById(cryptoId)
     val detailState by viewModel.detailState.collectAsState()
@@ -47,7 +49,11 @@ fun CryptoDetailScreen(
                 }
 
                 Button(
-                    onClick = { /* Sem operação conforme solicitado */ },
+                    onClick = { 
+                        crypto?.let {
+                            onBuy(CryptoModel(it.symbol, it.name, it.last))
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
                     Text("Comprar")
@@ -77,10 +83,21 @@ fun CryptoDetailScreen(
 
                         DetailItem(label = "Símbolo", value = detail.symbol)
                         DetailItem(label = "Último Preço", value = detail.last)
-                        DetailItem(label = "Último em BTC", value = detail.last_btc)
-                        DetailItem(label = "Mínima (24h)", value = detail.lowest)
-                        DetailItem(label = "Máxima (24h)", value = detail.highest)
-                        DetailItem(label = "Data/Hora", value = detail.date)
+                        DetailItem(label = "Último em BTC", value = detail.lastBtc ?: "N/A")
+                        DetailItem(label = "Mínima (24h)", value = detail.lowest ?: "N/A")
+                        DetailItem(label = "Máxima (24h)", value = detail.highest ?: "N/A")
+                        DetailItem(label = "Data/Hora", value = detail.date ?: "N/A")
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = { 
+                                onBuy(CryptoModel(detail.symbol, detail.symbol, detail.last))
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        ) {
+                            Text("Comprar Agora", fontWeight = FontWeight.Bold)
+                        }
                     }
                     is CryptoDetailUiState.Error -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -93,9 +110,7 @@ fun CryptoDetailScreen(
                             }
                         }
                     }
-                    is CryptoDetailUiState.Idle -> {
-                        // Aguardando início do carregamento
-                    }
+                    is CryptoDetailUiState.Idle -> {}
                 }
             }
         }

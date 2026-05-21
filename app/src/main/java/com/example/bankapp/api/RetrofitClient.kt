@@ -1,16 +1,10 @@
 package com.example.bankapp.api
 
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.bankapp.data.remote.RetrofitInstance
 
 object RetrofitClient {
-        private const val BASE_URL = "http://10.0.2.2:8080/api-android-helper/"
-
+    // Agora usa a mesma instância centralizada para evitar conflitos de conexão
     val instance: CryptoService by lazy {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        retrofit.create(CryptoService::class.java)
+        RetrofitInstance.cryptoService
     }
 }

@@ -1,26 +1,34 @@
 package com.example.bankapp.data.models
 
-data class CryptoListResponse(
-    val result: List<CryptoItem>
-)
+import com.google.gson.annotations.SerializedName
 
+// --- Modelos de Login ---
+data class UserLoginRequest(val login: String, val password: String)
+data class UserLoginResponse(val id: String?, val name: String?, val message: String)
+
+// --- Modelos de Mercado/Compra ---
+data class CryptoListResponse(val symbols: List<CryptoModel>?)
+data class CryptoModel(val symbol: String, val name: String?, val last: String?)
+
+data class CryptoPurchaseRequest(val userId: String, val symbol: String, val quantity: Double)
+data class CryptoPurchaseResponse(val transactionId: String?, val message: String)
+
+// --- Compatibilidade com Squad Portfolio ---
+// Eles usavam CryptoItem em vez de CryptoModel
 data class CryptoItem(
     val id: String,
     val symbol: String,
-    val source: String,
-    val ohlc_available_from: String,
-    val history_available_from: String
+    val name: String? = null,
+    val last: String? = null
 )
 
-data class CryptoDataResponse(
-    val symbols: List<CryptoDetail>
-)
-
+// --- Modelos de Detalhe ---
+data class CryptoDataResponse(val symbols: List<CryptoDetail>?)
 data class CryptoDetail(
     val symbol: String,
     val last: String,
-    val last_btc: String,
-    val lowest: String,
-    val highest: String,
-    val date: String
+    @SerializedName("last_btc") val lastBtc: String?,
+    val lowest: String?,
+    val highest: String?,
+    val date: String?
 )
