@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +20,7 @@ import com.example.bankapp.presentation.screens.DashboardScreen
 import com.example.bankapp.presentation.screens.LoginScreen
 import com.example.bankapp.presentation.theme.BankAppTheme
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
+import androidx.compose.material3.*
 import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
 import com.example.bankapp.presentation.viewmodels.ViewModelFactory
 
@@ -56,96 +56,100 @@ class MainActivity : ComponentActivity() {
                 val portfolioViewModel: MyPortfolioViewModel =
                     viewModel()
 
-                val snackbarHostState = remember {
-                    SnackbarHostState()
-                }
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    snackbarHost = {
-                        SnackbarHost(hostState = snackbarHostState)
-                    }
-                ) { innerPadding ->
-
-                    Box(
-                        modifier = Modifier.padding(innerPadding)
+                    NavHost(
+                        navController = navController,
+                        startDestination = "login"
                     ) {
 
-                        NavHost(
-                            navController = navController,
-                            startDestination = "login"
-                        ) {
+                        // LOGIN com mensagem de logout
+                        composable(
+                            route = "login?logoutMessage={logoutMessage}"
+                        ) { backStackEntry ->
 
-                            composable("login") {
+                            val logoutMessage =
+                                backStackEntry.arguments
+                                    ?.getString("logoutMessage")
 
-                                LoginScreen(
-                                    viewModel = viewModel(factory = factory),
+                            LoginScreen(
+                                viewModel = viewModel(factory = factory),
+                                logoutMessage = logoutMessage,
 
-                                    onLoginSuccess = { _ ->
-                                        navController.navigate("dashboard") {
-                                            popUpTo("login") {
-                                                inclusive = true
-                                            }
+                                onLoginSuccess = {
+
+                                    navController.navigate("dashboard") {
+
+                                        popUpTo("login") {
+                                            inclusive = true
                                         }
                                     }
-                                )
-                            }
+                                }
+                            )
+                        }
 
-                            composable("dashboard") {
-                                DashboardScreen(
-                                    viewModel = viewModel(factory = factory),
-                                    onNavigateToCryptos = {
-                                        navController.navigate("crypto_list")
-                                    },
-                                    onNavigateToMyCryptos = {
-                                        navController.navigate("my_cryptos")
-                                    },
-                                    onLogout = {
-                                        navController.navigate("login") {
-                                            popUpTo(0)
+                        // DASHBOARD
+                        composable("dashboard") {
+
+                            DashboardScreen(
+                                viewModel = viewModel(factory = factory),
+
+                                onNavigateToCryptos = {
+                                    navController.navigate("crypto_list")
+                                },
+
+                                onNavigateToMyCryptos = {
+                                    navController.navigate("my_cryptos")
+                                },
+
+                                onLogout = {
+
+                                    navController.navigate(
+                                        "login?logoutMessage=Logout realizado com sucesso"
+                                    ) {
+
+                                        popUpTo("dashboard") {
+                                            inclusive = true
                                         }
                                     }
-                                )
-                            }
+                                }
+                            )
+                        }
 
-                            composable("crypto_list") {
+                        // CRYPTOS
+                        composable("crypto_list") {
 
-                                CryptoListScreen(
-                                    viewModel = cryptoViewModel,
+                            CryptoListScreen(
+                                viewModel = cryptoViewModel,
 
-                                    onCryptoClick = { cryptoId ->
-                                        navController.navigate(
-                                            "crypto_detail/$cryptoId"
-                                        )
-                                    }
-                                )
-                            }
+                                onCryptoClick = { cryptoId ->
+                                    navController.navigate("crypto_detail/$cryptoId")
+                                }
+                            )
+                        }
 
-                            composable("crypto_detail/{cryptoId}") { backStackEntry ->
+                        // DETALHE
+                        composable("crypto_detail/{cryptoId}") { backStackEntry ->
 
-                                val cryptoId =
-                                    backStackEntry.arguments?.getString("cryptoId")
-                                        ?: ""
+                            val cryptoId =
+                                backStackEntry.arguments?.getString("cryptoId") ?: ""
 
-                                CryptoDetailScreen(
-                                    cryptoId = cryptoId,
-                                    viewModel = cryptoViewModel,
+                            CryptoDetailScreen(
+                                cryptoId = cryptoId,
+                                viewModel = cryptoViewModel,
 
-                                    onBack = {
-                                        navController.popBackStack()
-                                    }
-                                )
-                            }
+                                onBack = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
 
-                            composable("my_cryptos") {
+                        // PORTFOLIO
+                        composable("my_cryptos") {
 
-                                Text(
-                                    text = "Tela Minhas Cryptos"
-                                )
-
-                                // Você pode substituir depois
-                                // pela sua tela real de portfolio
-                            }
+                            Text(text = "Tela Minhas Cryptos")
                         }
                     }
                 }

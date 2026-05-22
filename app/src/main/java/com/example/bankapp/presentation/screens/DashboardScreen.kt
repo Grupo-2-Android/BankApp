@@ -39,10 +39,6 @@ fun DashboardScreen(
 
     val scope = rememberCoroutineScope()
 
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-
     ModalNavigationDrawer(
 
         drawerState = drawerState,
@@ -154,6 +150,7 @@ fun DashboardScreen(
                             drawerState.close()
                         }
 
+                        // Logout imediato
                         onLogout()
                     },
 
@@ -171,10 +168,6 @@ fun DashboardScreen(
         Scaffold(
 
             containerColor = Color.Black,
-
-            snackbarHost = {
-                SnackbarHost(snackbarHostState)
-            },
 
             topBar = {
 
