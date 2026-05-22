@@ -29,14 +29,20 @@ fun TransactionHistoryScreen(
     val transactions by viewModel.transactions.collectAsState()
 
     Scaffold(
+        containerColor = Color.Black,
         topBar = {
             TopAppBar(
-                title = { Text("Transaction History") },
+                title = { Text("Histórico de Transações", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Voltar",
+                            tint = Color.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
             )
         }
     ) { padding ->
@@ -47,7 +53,7 @@ fun TransactionHistoryScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No transactions found")
+                Text("Nenhuma transação encontrada", color = Color.Gray)
             }
         } else {
             LazyColumn(
@@ -57,7 +63,7 @@ fun TransactionHistoryScreen(
             ) {
                 items(transactions) { transaction ->
                     TransactionItem(transaction)
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color.DarkGray)
                 }
             }
         }
@@ -66,6 +72,7 @@ fun TransactionHistoryScreen(
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
+    val ptBr = Locale("pt", "BR")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,33 +80,45 @@ fun TransactionItem(transaction: Transaction) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.description,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = formatDate(transaction.date),
                 fontSize = 12.sp,
                 color = Color.Gray
             )
             Text(
-                text = "Type: ${transaction.operation}",
+                text = "Operação: ${translateOperation(transaction.operation)}",
                 fontSize = 12.sp,
                 color = Color.Gray
             )
         }
         Text(
-            text = if (transaction.operation == "BUY") "-$${String.format(Locale.US, "%.2f", transaction.amount)}" 
-                   else "$${String.format(Locale.US, "%.2f", transaction.amount)}",
+            text = if (transaction.operation == "BUY") "-R$ ${String.format(ptBr, "%,.2f", transaction.amount)}" 
+                   else "R$ ${String.format(ptBr, "%,.2f", transaction.amount)}",
             fontWeight = FontWeight.Bold,
-            color = if (transaction.operation == "BUY") Color.Red else Color(0xFF4CAF50)
+            fontSize = 16.sp,
+            color = if (transaction.operation == "BUY") Color(0xFFF44336) else Color(0xFF4CAF50)
         )
     }
 }
 
+private fun translateOperation(operation: String): String {
+    return when (operation.uppercase()) {
+        "BUY" -> "COMPRA"
+        "SELL" -> "VENDA"
+        "INITIAL" -> "SALDO INICIAL"
+        else -> operation
+    }
+}
+
 private fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("pt", "BR"))
     return sdf.format(Date(timestamp))
 }

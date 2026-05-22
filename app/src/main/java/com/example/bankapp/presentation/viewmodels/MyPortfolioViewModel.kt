@@ -2,47 +2,65 @@ package com.example.bankapp.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bankapp.data.local.datastore.UserPreferences
+import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.data.models.CryptoItem
 import com.example.bankapp.data.models.OwnedCrypto
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MyPortfolioViewModel : ViewModel() {
+class MyPortfolioViewModel(
+    private val userPreferences: UserPreferences,
+    private val database: AppDatabase
+) : ViewModel() {
 
-    private val mockOwnedCryptos = listOf(
-        OwnedCrypto(
-            cryptoInfo = CryptoItem("1", "BTC", source = "", ohlc_available_from = "", history_available_from = ""),
-            quantity = 0.523,
-            currentPrice = 350000.00
-        ),
-        OwnedCrypto(
-            cryptoInfo = CryptoItem("2", "ETH", source = "", ohlc_available_from = "", history_available_from = ""),
-            quantity = 4.10,
-            currentPrice = 18500.00
-        ),
-        OwnedCrypto(
-            cryptoInfo = CryptoItem("3", "LTC", source = "", ohlc_available_from = "", history_available_from = ""),
-            quantity = 25.0,
-            currentPrice = 450.00
-        )
-    )
+    val userName: StateFlow<String> = userPreferences.userId
+        .flatMapLatest { id ->
+            if (id != null) database.bankDao().getUserFlow(id) else flowOf(null)
+        }
+        .map { it?.name ?: "Usuário" }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Usuário")
 
-    private val _ownedCryptosState = MutableStateFlow<List<OwnedCrypto>>(mockOwnedCryptos)
-    val ownedCryptosState: StateFlow<List<OwnedCrypto>> = _ownedCryptosState
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val ownedCryptosState: StateFlow<List<OwnedCrypto>> = userPreferences.userId
+        .flatMapLatest { userId ->
+            if (userId != null) {
+                database.bankDao().getCryptoAssetsByUser(userId).map { assets ->
+                    assets
+                        .filter { it.cryptoId != "BTC" } // LIMPEZA: Remove a entrada duplicada de teste para a entrega
+                        .map { asset ->
+                        OwnedCrypto(
+                            cryptoInfo = CryptoItem(
+                                id = asset.cryptoId,
+                                symbol = asset.symbol,
+                                source = "",
+                                ohlc_available_from = "",
+                                history_available_from = ""
+                            ),
+                            quantity = asset.amount,
+                            currentPrice = when (asset.symbol) {
+                                "BTC" -> 354120.0
+                                "ETH" -> 15200.0
+                                "LTC" -> 450.0
+                                else -> 100.0
+                            }
+                        )
+                    }
+                }
+            } else {
+                flowOf(emptyList())
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _saleState = MutableStateFlow<SaleUiState>(SaleUiState.Idle)
     val saleState: StateFlow<SaleUiState> = _saleState
 
-    // Canal de eventos para disparar o Toast e Navegação de forma limpa na MainActivity
     private val _saleEvents = MutableSharedFlow<SaleEvent>()
     val saleEvents: SharedFlow<SaleEvent> = _saleEvents.asSharedFlow()
 
     fun selectCryptoForSale(cryptoId: String) {
-        val crypto = mockOwnedCryptos.find { it.cryptoInfo.id == cryptoId }
+        val crypto = ownedCryptosState.value.find { it.cryptoInfo.id == cryptoId }
         crypto?.let {
             _saleState.value = SaleUiState.CryptoSelected(it)
         }
@@ -59,9 +77,7 @@ class MyPortfolioViewModel : ViewModel() {
 
     fun confirmSale() {
         viewModelScope.launch {
-            // Emite o evento de sucesso capturado pela Activity
             _saleEvents.emit(SaleEvent.Success)
-            // Reseta o estado local do fluxo de venda de forma segura
             _saleState.value = SaleUiState.Idle
         }
     }

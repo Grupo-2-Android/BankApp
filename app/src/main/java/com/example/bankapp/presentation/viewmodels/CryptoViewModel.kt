@@ -10,6 +10,12 @@ import com.example.bankapp.data.models.CryptoItem
 import com.example.bankapp.data.repositories.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -30,6 +36,22 @@ class CryptoViewModel(
 
     private val _detailState = MutableStateFlow<CryptoDetailUiState>(CryptoDetailUiState.Idle)
     val detailState: StateFlow<CryptoDetailUiState> = _detailState
+
+    // Balance and Buying Flow Logic
+    val userBalance: StateFlow<Double> = userPreferences.userId.flatMapLatest { id ->
+        if (id != null) database.bankDao().getUserFlow(id) else flowOf(null)
+    }.map { it?.balance ?: 0.0 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    private val _brlAmount = MutableStateFlow("")
+    val brlAmount: StateFlow<String> = _brlAmount
+
+    fun onBrlAmountChange(amount: String) {
+        // Only allow numeric input with one decimal separator
+        if (amount.isEmpty() || amount.matches(Regex("^\\d*[.,]?\\d*\$"))) {
+            _brlAmount.value = amount.replace(",", ".")
+        }
+    }
 
     fun fetchCryptos() {
         viewModelScope.launch {
@@ -65,25 +87,24 @@ class CryptoViewModel(
         return _allCryptos.find { it.id == id }
     }
 
-    fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
+    fun buyCrypto(cryptoId: String, symbol: String, amountCrypto: Double, amountBrl: Double) {
         viewModelScope.launch {
             val userId = userPreferences.userId.first() ?: return@launch
-            val totalCost = amount * price
-
+            
             val dao = database.bankDao()
             val user = dao.getUserById(userId) ?: return@launch
 
-            if (user.balance >= totalCost) {
+            if (user.balance >= amountBrl) {
                 // Update Balance
-                val updatedUser = user.copy(balance = user.balance - totalCost)
+                val updatedUser = user.copy(balance = user.balance - amountBrl)
                 dao.updateUser(updatedUser)
 
                 // Add Transaction
                 dao.insertTransaction(
                     Transaction(
                         userId = userId,
-                        amount = totalCost,
-                        description = "Compra de $amount $symbol",
+                        amount = amountBrl,
+                        description = "Compra de $amountCrypto $symbol",
                         date = System.currentTimeMillis(),
                         operation = "BUY"
                     )
@@ -93,17 +114,19 @@ class CryptoViewModel(
                 val existingAssets = dao.getCryptoAssetsByUser(userId).first()
                 val asset = existingAssets.find { it.cryptoId == cryptoId }
                 if (asset != null) {
-                    dao.upsertCryptoAsset(asset.copy(amount = asset.amount + amount))
+                    dao.upsertCryptoAsset(asset.copy(amount = asset.amount + amountCrypto))
                 } else {
                     dao.upsertCryptoAsset(
                         CryptoAsset(
                             userId = userId,
                             cryptoId = cryptoId,
                             symbol = symbol,
-                            amount = amount
+                            amount = amountCrypto
                         )
                     )
                 }
+                // Clear input after success
+                _brlAmount.value = ""
             }
         }
     }

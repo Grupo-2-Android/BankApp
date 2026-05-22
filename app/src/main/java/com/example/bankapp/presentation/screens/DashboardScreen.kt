@@ -3,13 +3,10 @@ package com.example.bankapp.presentation.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -29,6 +26,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel,
     onNavigateToCryptos: () -> Unit,
     onNavigateToMyCryptos: () -> Unit = {},
+    onNavigateToHistory: () -> Unit = {},
     onLogout: () -> Unit
 ) {
 
@@ -125,6 +123,28 @@ fun DashboardScreen(
                     )
                 )
 
+                NavigationDrawerItem(
+                    label = {
+                        Text("Histórico", color = Color.White)
+                    },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                        onNavigateToHistory()
+                    },
+                    icon = {
+                        Icon(Icons.Default.History, contentDescription = null, tint = Color(0xFF4CAF50))
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        unselectedTextColor = Color.White,
+                        selectedTextColor = Color.White
+                    )
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 HorizontalDivider(color = Color.Gray)
@@ -142,7 +162,7 @@ fun DashboardScreen(
                     icon = {
 
                         Icon(
-                            Icons.Default.ExitToApp,
+                            Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Logout",
                             tint = Color(0xFF4CAF50)
                         )
@@ -305,6 +325,26 @@ fun DashboardScreen(
 
                     Text(
                         text = "Minhas Cryptos",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onNavigateToHistory,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1E1E1E),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Histórico de Transações",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
