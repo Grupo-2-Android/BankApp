@@ -8,14 +8,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bankapp.presentation.theme.BankAppTheme
 import com.example.bankapp.presentation.viewmodels.LoginStatus
 import com.example.bankapp.presentation.viewmodels.LoginViewModel
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LoginScreen(
@@ -27,119 +29,106 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
     val loginState by viewModel.loginState.collectAsState()
 
     val snackbarHostState = remember {
         SnackbarHostState()
     }
 
+    fun sanitize(input: String): String {
+        val emojiRegex = Regex("[\\p{So}\\p{Cn}\\p{Cs}]")
+        return input.replace("\n", "").replace(emojiRegex, "")
+    }
+
+    fun validateUsername(value: String): String? {
+        return when {
+            value.isBlank() -> "Usuário não pode ser vazio"
+            value.trim() != value -> "Não use espaços no início ou fim"
+            value.contains("  ") -> "Não use espaços duplos"
+            else -> null
+        }
+    }
+
+    fun validatePassword(value: String): String? {
+        return when {
+            value.length < 6 -> "Senha deve ter no mínimo 6 caracteres"
+            else -> null
+        }
+    }
+
     LaunchedEffect(loginState) {
-
         if (loginState is LoginStatus.Success) {
-
             onLoginSuccess("")
-
             viewModel.resetState()
         }
     }
 
-    // Exibe snackbar após logout
     LaunchedEffect(logoutMessage) {
-
         if (!logoutMessage.isNullOrBlank()) {
-
-            snackbarHostState.showSnackbar(
-                message = logoutMessage
-            )
+            snackbarHostState.showSnackbar(logoutMessage)
         }
     }
 
     Scaffold(
-
-        snackbarHost = {
-            SnackbarHost(snackbarHostState)
-        },
-
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color.Black
-
     ) { padding ->
 
         Surface(
-
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-
             color = Color.Black
         ) {
 
             Column(
-
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(24.dp),
-
                 horizontalAlignment = Alignment.CenterHorizontally,
-
                 verticalArrangement = Arrangement.Center
-
             ) {
 
                 Text(
                     text = "BankApp",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 40.sp
+                    color = Color.White
                 )
 
                 Text(
                     text = "Seu banco digital seguro",
-                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.padding(bottom = 40.dp)
                 )
 
                 Card(
-
                     modifier = Modifier.fillMaxWidth(),
-
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1A1A1A)
-                    ),
-
+                    colors = CardDefaults.cardColors(Color(0xFF1A1A1A)),
                     shape = RoundedCornerShape(16.dp)
-
                 ) {
 
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
 
                         OutlinedTextField(
-
                             value = username,
-
                             onValueChange = {
 
-                                username = it
+                                val cleaned = sanitize(it)
 
-                                if (loginState is LoginStatus.Error) {
-                                    viewModel.resetState()
-                                }
+                                username = cleaned
+                                usernameError = validateUsername(cleaned)
                             },
-
-                            label = {
-                                Text(
-                                    "Usuário",
-                                    color = Color.Gray
-                                )
-                            },
-
+                            label = { Text("Usuário", color = Color.Gray) },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next
+                            ),
                             modifier = Modifier.fillMaxWidth(),
-
-                            isError = loginState is LoginStatus.Error,
-
+                            isError = usernameError != null,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
@@ -148,35 +137,35 @@ fun LoginScreen(
                                 errorBorderColor = Color.Red
                             )
                         )
+
+                        if (usernameError != null) {
+                            Text(
+                                text = usernameError!!,
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         OutlinedTextField(
-
                             value = password,
-
                             onValueChange = {
 
-                                password = it
+                                val cleaned = sanitize(it)
 
-                                if (loginState is LoginStatus.Error) {
-                                    viewModel.resetState()
-                                }
+                                password = cleaned
+                                passwordError = validatePassword(cleaned)
                             },
-
-                            label = {
-                                Text(
-                                    "Senha",
-                                    color = Color.Gray
-                                )
-                            },
-
+                            label = { Text("Senha", color = Color.Gray) },
                             visualTransformation = PasswordVisualTransformation(),
-
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done
+                            ),
                             modifier = Modifier.fillMaxWidth(),
-
-                            isError = loginState is LoginStatus.Error,
-
+                            isError = passwordError != null,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
@@ -186,47 +175,43 @@ fun LoginScreen(
                             )
                         )
 
-                        if (loginState is LoginStatus.Error) {
-
+                        if (passwordError != null) {
                             Text(
-                                text = (loginState as LoginStatus.Error).message,
+                                text = passwordError!!,
                                 color = Color.Red,
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(top = 8.dp)
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 4.dp)
                             )
                         }
 
                         Spacer(modifier = Modifier.height(32.dp))
 
                         Button(
-
                             onClick = {
-                                viewModel.login(username, password)
+
+                                usernameError = validateUsername(username)
+                                passwordError = validatePassword(password)
+
+                                if (usernameError == null && passwordError == null) {
+                                    viewModel.login(username, password)
+                                }
                             },
-
                             modifier = Modifier.fillMaxWidth(),
-
                             enabled = loginState !is LoginStatus.Loading,
-
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF4CAF50),
                                 contentColor = Color.White
                             ),
-
                             shape = RoundedCornerShape(8.dp)
-
                         ) {
 
                             if (loginState is LoginStatus.Loading) {
-
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     color = Color.White,
                                     strokeWidth = 2.dp
                                 )
-
                             } else {
-
                                 Text(
                                     text = "Entrar",
                                     fontWeight = FontWeight.Bold,
@@ -244,11 +229,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-
     BankAppTheme {
-
-        LoginScreen(
-            onLoginSuccess = {}
-        )
+        LoginScreen(onLoginSuccess = {})
     }
 }
