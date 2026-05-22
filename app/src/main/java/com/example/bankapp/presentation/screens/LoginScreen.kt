@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String) -> Unit,
+    onLoginSuccess: () -> Unit,
     logoutMessage: String? = null,
     viewModel: LoginViewModel = viewModel()
 ) {
@@ -61,14 +61,14 @@ fun LoginScreen(
 
     LaunchedEffect(loginState) {
         if (loginState is LoginStatus.Success) {
-            onLoginSuccess("")
+            onLoginSuccess()
             viewModel.resetState()
         }
     }
 
     LaunchedEffect(logoutMessage) {
-        if (!logoutMessage.isNullOrBlank()) {
-            snackbarHostState.showSnackbar(logoutMessage)
+        logoutMessage?.let {
+            snackbarHostState.showSnackbar(it)
         }
     }
 
@@ -128,14 +128,7 @@ fun LoginScreen(
                                 imeAction = ImeAction.Next
                             ),
                             modifier = Modifier.fillMaxWidth(),
-                            isError = usernameError != null,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedBorderColor = Color(0xFF4CAF50),
-                                unfocusedBorderColor = Color.Gray,
-                                errorBorderColor = Color.Red
-                            )
+                            isError = usernameError != null
                         )
 
                         if (usernameError != null) {
@@ -165,14 +158,7 @@ fun LoginScreen(
                                 imeAction = ImeAction.Done
                             ),
                             modifier = Modifier.fillMaxWidth(),
-                            isError = passwordError != null,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedBorderColor = Color(0xFF4CAF50),
-                                unfocusedBorderColor = Color.Gray,
-                                errorBorderColor = Color.Red
-                            )
+                            isError = passwordError != null
                         )
 
                         if (passwordError != null) {

@@ -14,15 +14,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
-import com.example.bankapp.presentation.screens.CryptoDetailScreen
-import com.example.bankapp.presentation.screens.CryptoListScreen
-import com.example.bankapp.presentation.screens.DashboardScreen
-import com.example.bankapp.presentation.screens.LoginScreen
+import com.example.bankapp.presentation.screens.*
 import com.example.bankapp.presentation.theme.BankAppTheme
-import com.example.bankapp.presentation.viewmodels.CryptoViewModel
+import com.example.bankapp.presentation.viewmodels.*
+import kotlinx.coroutines.launch
 import androidx.compose.material3.*
-import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
-import com.example.bankapp.presentation.viewmodels.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
@@ -56,16 +52,26 @@ class MainActivity : ComponentActivity() {
                 val portfolioViewModel: MyPortfolioViewModel =
                     viewModel()
 
+                // ✔ Estado de login persistente
+                val isLoggedIn by userPreferences.isLoggedIn
+                    .collectAsState(initial = false)
+
+                // ✔ Coroutine scope correto (fora de callbacks)
+                val scope = rememberCoroutineScope()
+
+                val startDestination =
+                    if (isLoggedIn) "dashboard" else "login"
+
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "login"
+                        startDestination = startDestination
                     ) {
 
-                        // LOGIN com mensagem de logout
+                        // LOGIN
                         composable(
                             route = "login?logoutMessage={logoutMessage}"
                         ) { backStackEntry ->
@@ -105,6 +111,11 @@ class MainActivity : ComponentActivity() {
                                 },
 
                                 onLogout = {
+
+                                    // ✔ LOGOUT CORRETO (SEM ERRO COMPOSABLE)
+                                    scope.launch {
+                                        userPreferences.logout()
+                                    }
 
                                     navController.navigate(
                                         "login?logoutMessage=Logout realizado com sucesso"
