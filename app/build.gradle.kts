@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.compose.material.icons.extended)
 
+    // Scan Card
+    implementation(libs.scancard)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

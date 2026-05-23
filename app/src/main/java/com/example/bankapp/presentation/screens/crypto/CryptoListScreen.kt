@@ -1,4 +1,4 @@
-package com.example.bankapp.presentation.screens
+package com.example.bankapp.presentation.screens.crypto
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bankapp.presentation.viewmodels.CryptoUiState
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 

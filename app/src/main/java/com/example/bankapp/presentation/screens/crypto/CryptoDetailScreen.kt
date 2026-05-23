@@ -1,4 +1,4 @@
-package com.example.bankapp.presentation.screens
+package com.example.bankapp.presentation.screens.crypto
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
