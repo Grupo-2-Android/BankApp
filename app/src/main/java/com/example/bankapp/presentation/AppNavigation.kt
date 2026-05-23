@@ -13,8 +13,8 @@ import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.presentation.screens.cards.AddCardScreen
 import com.example.bankapp.presentation.screens.cards.CardManagementScreen
-import com.example.bankapp.presentation.screens.CryptoDetailScreen
-import com.example.bankapp.presentation.screens.CryptoListScreen
+import com.example.bankapp.presentation.screens.crypto.CryptoDetailScreen
+import com.example.bankapp.presentation.screens.crypto.CryptoListScreen
 import com.example.bankapp.presentation.screens.DashboardScreen
 import com.example.bankapp.presentation.screens.LoginScreen
 import com.example.bankapp.presentation.screens.portfolio.MyCryptoDetailScreen
@@ -69,7 +69,12 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
         composable("dashboard") {
             DashboardScreen(
                 viewModel = viewModel(factory = factory),
-                navController = navController
+                navController = navController,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo(0)
+                    }
+                }
             )
         }
         composable("crypto_list") {
