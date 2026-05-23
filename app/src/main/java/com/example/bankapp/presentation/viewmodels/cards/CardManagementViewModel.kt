@@ -54,7 +54,6 @@ class CardManagementViewModel(
 
     fun generateVirtualCard() {
         viewModelScope.launch {
-            _addCardUiState.update { AddCardUiState.Content }
             try {
                 val userId = userPreferences.userId.first() ?: return@launch
                 val virtualCard = repository.getVirtualCard()
@@ -70,11 +69,12 @@ class CardManagementViewModel(
                 Log.e(TAG, "Error fetching virtual card: ${e.message}")
                 _error.value = "Erro ao gerar cartão virtual. Tente novamente."
             }
+            _addCardUiState.update { AddCardUiState.Content }
         }
     }
 
     fun setScannedCardPreview(cardData: CreditCardData?) {
-        _addCardUiState.update { AddCardUiState.Content }
+        Log.i(TAG, "setScannedCardPreview: $cardData")
         viewModelScope.launch {
             val userId = userPreferences.userId.first() ?: return@launch
 
@@ -92,25 +92,25 @@ class CardManagementViewModel(
                 _previewCard.value = Card(
                     userId = userId,
                     type = TYPE_PHYSICAL,
-                    number = cardData.number,
+                    number = cardData.number.replace(" ", ""),
                     expiration = cardData.validity,
                     cvv = cardData.cvv,
                     brand = cardData.flag ?: "MASTERCARD"
                 )
             }
             _error.value = null
+            _addCardUiState.update { AddCardUiState.Content }
         }
     }
 
-    fun confirmAddCard(onSuccess: () -> Unit = {}) {
+    fun confirmAddCard(onSuccess: () -> Unit) {
         viewModelScope.launch {
             if (_previewCard.value == null) {
                 _error.value = "Houve uma falha ao gerar cartão."
             } else {
                 database.bankDao().insertCard(_previewCard.value!!)
-                _previewCard.value = null
-                _error.value = null
                 onSuccess()
+                _addCardUiState.value = AddCardUiState.Loading
             }
         }
     }
@@ -154,6 +154,18 @@ class CardManagementViewModel(
             else -> {
                 _error.value = "Tipo de cartão inválido."
                 false
+            }
+        }
+    }
+
+    fun deleteCard(card: Card) {
+        viewModelScope.launch {
+            try {
+                database.bankDao().deleteCard(card)
+                loadCards()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting card: ${e.message}")
+                _error.value = "Erro ao deletar cartão. Tente novamente."
             }
         }
     }

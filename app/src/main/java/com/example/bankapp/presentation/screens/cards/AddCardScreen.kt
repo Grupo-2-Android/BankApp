@@ -1,14 +1,13 @@
 package com.example.bankapp.presentation.screens.cards
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -46,11 +47,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import com.br.scan_card.CreditCardData
 import com.br.scan_card.ScanCardActivity
+import com.example.bankapp.R
 import com.example.bankapp.data.local.room.entities.Card
+import com.example.bankapp.presentation.theme.GreenPrimary
+import com.example.bankapp.presentation.theme.GreenSecondary
 import com.example.bankapp.presentation.utils.components.CardItem
 import com.example.bankapp.presentation.utils.formatCardNumber
 import com.example.bankapp.presentation.viewmodels.cards.AddCardUiState
@@ -74,18 +78,8 @@ fun AddCardScreen(
     val scanCardLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == ScanCardActivity.CAMERA_NOT_GRANTED_CODE) {
-            context.findActivity()?.let { activity ->
-                ActivityCompat.requestPermissions(
-                    activity,
-                    arrayOf(Manifest.permission.CAMERA),
-                    ScanCardActivity.CAMERA_PERMISSION_CODE
-                )
-            }
-        } else {
-            val cardData = parseCardData(result.data)
-            viewModel.setScannedCardPreview(cardData)
-        }
+        val cardData = parseCardData(result.data)
+        viewModel.setScannedCardPreview(cardData)
     }
 
     LaunchedEffect(cardType) {
@@ -111,6 +105,7 @@ fun AddCardScreen(
 
     val typeLabel = if (isPhysical) "Físico" else "Virtual"
     val canConfirm = !isPhysical || previewCard != null
+    val roundedButtonShape = RoundedCornerShape(12.dp)
 
     if (addCardUiState is AddCardUiState.Loading) {
         Box(
@@ -152,10 +147,11 @@ fun AddCardScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
+                        shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
+                            containerColor = GreenPrimary,
                             contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
                             disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
                         )
                     ) {
@@ -234,8 +230,16 @@ fun AddCardScreen(
                                 scanCardLauncher.launch(intent)
                             },
                             modifier = Modifier.fillMaxWidth(),
-
+                            shape = roundedButtonShape,
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = GreenSecondary),
+                            border = BorderStroke(1.dp, GreenSecondary)
                         ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.scan_card),
+                                contentDescription = "Escanear cartão",
+                                tint = GreenSecondary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text("Escanear novamente")
                         }
                     }
