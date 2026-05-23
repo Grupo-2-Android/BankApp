@@ -12,14 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
 import com.example.bankapp.presentation.viewmodels.DashboardViewModel
 import java.util.Locale
 
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    onNavigateToCryptos: () -> Unit,
-    onNavigateToMyCryptos: () -> Unit = {}
+    navController: NavController
 ) {
     val userAccount by viewModel.userAccount.collectAsState()
 
@@ -61,8 +61,10 @@ fun DashboardScreen(
             )
 
             Button(
-                onClick = onNavigateToCryptos,
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                onClick = { navController.navigate("crypto_list") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -74,12 +76,27 @@ fun DashboardScreen(
             // Este botão é temporário na Dashboard.
             // Mais para frente, esta ação será movida para a Sidebar (Navigation Drawer).
             Button(
-                onClick = onNavigateToMyCryptos,
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                onClick = {  },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text("Minhas Cryptos", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("cards") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Cartões", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
         }
     }
