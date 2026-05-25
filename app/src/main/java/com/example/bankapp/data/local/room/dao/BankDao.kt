@@ -39,6 +39,9 @@ interface BankDao {
     @Query("SELECT COUNT(*) FROM cards WHERE userId = :userId")
     suspend fun getCardCount(userId: String): Int
 
+    @Delete
+    suspend fun deleteCard(card: Card)
+
     // Crypto Assets
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertCryptoAsset(asset: CryptoAsset)

@@ -1,16 +1,39 @@
 package com.example.bankapp.presentation.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +49,7 @@ import java.util.Locale
 fun DashboardScreen(
     viewModel: DashboardViewModel,
     onNavigateToCryptos: () -> Unit,
-    onNavigateToMyCryptos: () -> Unit = {},
+    onNavigateToMyCryptos: () -> Unit,
     onLogout: () -> Unit
 ) {
 
@@ -50,7 +73,6 @@ fun DashboardScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ✔ MELHORIA: fallback mais seguro
                 Text(
                     text = "Olá, ${userAccount?.name ?: "Usuário"}",
                     color = Color.White,
@@ -71,10 +93,16 @@ fun DashboardScreen(
                 HorizontalDivider(color = Color.Gray)
 
                 NavigationDrawerItem(
-                    label = { Text("Cryptos", color = Color.White) },
+                    label = {
+                        Text("Cryptos", color = Color.White)
+                    },
                     selected = false,
                     onClick = {
-                        scope.launch { drawerState.close() }
+
+                        scope.launch {
+                            drawerState.close()
+                        }
+
                         onNavigateToCryptos()
                     },
                     colors = NavigationDrawerItemDefaults.colors(
@@ -86,10 +114,16 @@ fun DashboardScreen(
                 )
 
                 NavigationDrawerItem(
-                    label = { Text("Minhas Cryptos", color = Color.White) },
+                    label = {
+                        Text("Minhas Cryptos", color = Color.White)
+                    },
                     selected = false,
                     onClick = {
-                        scope.launch { drawerState.close() }
+
+                        scope.launch {
+                            drawerState.close()
+                        }
+
                         onNavigateToMyCryptos()
                     },
                     colors = NavigationDrawerItemDefaults.colors(
@@ -107,19 +141,23 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 NavigationDrawerItem(
-                    label = { Text("Sair", color = Color.White) },
+                    label = {
+                        Text("Sair", color = Color.White)
+                    },
                     selected = false,
                     icon = {
                         Icon(
-                            Icons.Default.ExitToApp,
+                            Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Logout",
                             tint = Color(0xFF4CAF50)
                         )
                     },
                     onClick = {
-                        scope.launch { drawerState.close() }
 
-                        // ✔ logout centralizado (já correto)
+                        scope.launch {
+                            drawerState.close()
+                        }
+
                         onLogout()
                     },
                     colors = NavigationDrawerItemDefaults.colors(
@@ -147,13 +185,16 @@ fun DashboardScreen(
                     },
 
                     navigationIcon = {
+
                         IconButton(
                             onClick = {
+
                                 scope.launch {
                                     drawerState.open()
                                 }
                             }
                         ) {
+
                             Icon(
                                 Icons.Default.Menu,
                                 contentDescription = "Menu",
@@ -175,14 +216,16 @@ fun DashboardScreen(
                     .fillMaxSize()
                     .padding(padding)
                     .padding(24.dp),
+
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
 
-                // ✔ MELHORIA: evita UI quebrada quando null
                 if (userAccount == null) {
 
-                    CircularProgressIndicator(color = Color(0xFF4CAF50))
+                    CircularProgressIndicator(
+                        color = Color(0xFF4CAF50)
+                    )
 
                 } else {
 
@@ -202,6 +245,7 @@ fun DashboardScreen(
                                 userAccount!!.balance
                             )
                         }",
+
                         style = MaterialTheme.typography.titleLarge,
                         color = Color(0xFF4CAF50),
                         fontWeight = FontWeight.Bold,
@@ -219,15 +263,19 @@ fun DashboardScreen(
 
                 Button(
                     onClick = onNavigateToCryptos,
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50),
                         contentColor = Color.White
                     ),
+
                     shape = RoundedCornerShape(8.dp)
                 ) {
+
                     Text(
                         text = "Cryptos",
                         fontWeight = FontWeight.Bold,
@@ -239,15 +287,19 @@ fun DashboardScreen(
 
                 Button(
                     onClick = onNavigateToMyCryptos,
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50),
                         contentColor = Color.White
                     ),
+
                     shape = RoundedCornerShape(8.dp)
                 ) {
+
                     Text(
                         text = "Minhas Cryptos",
                         fontWeight = FontWeight.Bold,

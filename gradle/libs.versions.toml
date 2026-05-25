@@ -19,6 +19,7 @@ roomCompiler = "2.8.4"
 roomKtx = "2.8.4"
 roomRuntime = "2.8.4"
 ksp = "2.1.0-1.0.29"
+scancard = "1.1.0"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
@@ -46,6 +47,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+scancard = { module = "com.github.Gustavo-MedeirosS:ScanCard", version.ref = "scancard" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

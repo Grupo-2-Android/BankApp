@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
+import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 
 class ViewModelFactory(
     private val userPreferences: UserPreferences,
@@ -28,7 +29,10 @@ class ViewModelFactory(
         }
         if (modelClass.isAssignableFrom(CardManagementViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CardManagementViewModel(userPreferences = userPreferences, database = database) as T
+            return CardManagementViewModel(
+                userPreferences = userPreferences,
+                database = database
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
