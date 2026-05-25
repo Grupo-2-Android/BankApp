@@ -25,3 +25,7 @@ val TextSecondaryLight = Color(0xFF6B7280)
 // Inputs/bordas
 val BorderDark = Color(0xFF2A2F36)
 val BorderLight = Color(0xFFD1D5DB)
+
+val VirtualCardColor = Color(0xFF038052)
+val PhysicalCardColor = Color(0xFF104D34)
+val RedDelete = Color(0xFFC74242)
