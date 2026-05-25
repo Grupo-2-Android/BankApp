@@ -21,6 +21,7 @@ import com.example.bankapp.presentation.screens.portfolio.MyCryptoDetailScreen
 import com.example.bankapp.presentation.screens.portfolio.MyCryptosListScreen
 import com.example.bankapp.presentation.screens.portfolio.SellCheckoutScreen
 import com.example.bankapp.presentation.screens.portfolio.SellQuantityScreen
+import com.example.bankapp.presentation.viewmodels.DashboardViewModel
 import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
@@ -67,12 +68,14 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
             )
         }
         composable("dashboard") {
+            val dashboardViewModel: DashboardViewModel = viewModel(factory = factory)
             DashboardScreen(
-                viewModel = viewModel(factory = factory),
+                viewModel = dashboardViewModel,
                 navController = navController,
                 onLogout = {
+                    dashboardViewModel.logout()
                     navController.navigate("login") {
-                        popUpTo(0)
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
