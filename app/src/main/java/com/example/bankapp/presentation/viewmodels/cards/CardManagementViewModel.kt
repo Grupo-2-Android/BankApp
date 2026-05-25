@@ -1,17 +1,19 @@
 package com.example.bankapp.presentation.viewmodels.cards
 
+import com.example.bankapp.data.local.room.entities.Card
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.scan_card.CreditCardData
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
-import com.example.bankapp.data.local.room.entities.Card
 import com.example.bankapp.data.repositories.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -41,14 +43,17 @@ class CardManagementViewModel(
 
     private fun loadCards() {
         viewModelScope.launch {
-            userPreferences.userId.collect { userId ->
-                Log.i(TAG, "userId: $userId")
-                if (userId != null) {
-                    database.bankDao().getCardsByUser(userId).collect {
-                        _cards.value = it
+            userPreferences.userId
+                .flatMapLatest { userId ->
+                    if (!userId.isNullOrBlank()) {
+                        database.bankDao().getCardsByUser(userId)
+                    } else {
+                        flowOf(emptyList())
                     }
                 }
-            }
+                .collect { cardList ->
+                    _cards.value = cardList
+                }
         }
     }
 
@@ -105,10 +110,22 @@ class CardManagementViewModel(
 
     fun confirmAddCard(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            if (_previewCard.value == null) {
+            val cardToInsert = _previewCard.value
+            if (cardToInsert == null) {
                 _error.value = "Houve uma falha ao gerar cartão."
             } else {
-                database.bankDao().insertCard(_previewCard.value!!)
+                // Validação final de segurança antes de inserir no banco
+                val currentCards = _cards.value
+                if (currentCards.size >= 2) {
+                    _error.value = "Limite de 2 cartões atingido."
+                    return@launch
+                }
+                if (currentCards.any { it.type == cardToInsert.type }) {
+                    _error.value = "Você já possui um cartão do tipo ${if(cardToInsert.type == TYPE_PHYSICAL) "Físico" else "Virtual"}."
+                    return@launch
+                }
+
+                database.bankDao().insertCard(cardToInsert)
                 onSuccess()
                 _addCardUiState.value = AddCardUiState.Loading
             }
@@ -162,7 +179,7 @@ class CardManagementViewModel(
         viewModelScope.launch {
             try {
                 database.bankDao().deleteCard(card)
-                loadCards()
+                // loadCards() é desnecessário aqui pois já temos um coletor ativo
             } catch (e: Exception) {
                 Log.e(TAG, "Error deleting card: ${e.message}")
                 _error.value = "Erro ao deletar cartão. Tente novamente."

@@ -23,12 +23,20 @@ class DashboardViewModel(
     private fun loadUserData() {
         viewModelScope.launch {
             userPreferences.userId.collectLatest { id ->
-                id?.let {
-                    database.bankDao().getUserFlow(it).collectLatest { account ->
+                if (id != null) {
+                    database.bankDao().getUserFlow(id).collectLatest { account ->
                         _userAccount.value = account
                     }
+                } else {
+                    _userAccount.value = null
                 }
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            userPreferences.clear()
         }
     }
 }
