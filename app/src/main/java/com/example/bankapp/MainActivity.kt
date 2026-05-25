@@ -55,6 +55,9 @@ class MainActivity : ComponentActivity() {
 
                 val portfolioViewModel: MyPortfolioViewModel =
                     viewModel()
+                    viewModel(factory = factory)
+
+                val userName by portfolioViewModel.userName.collectAsState()
 
                 val snackbarHostState = remember {
                     SnackbarHostState()
