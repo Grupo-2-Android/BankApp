@@ -22,11 +22,13 @@ class TransactionHistoryViewModel(
 
     private fun loadTransactions() {
         viewModelScope.launch {
-            userPreferences.userId.collect { userId ->
+            userPreferences.userId.collectLatest { userId ->
                 if (userId != null) {
                     database.bankDao().getTransactionsByUser(userId).collect {
                         _transactions.value = it
                     }
+                } else {
+                    _transactions.value = emptyList()
                 }
             }
         }

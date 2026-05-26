@@ -40,7 +40,8 @@ import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 fun CryptoDetailScreen(
     cryptoId: String,
     viewModel: CryptoViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToBuy: () -> Unit
 ) {
     val crypto = viewModel.getCryptoById(cryptoId)
     val detailState by viewModel.detailState.collectAsState()
@@ -78,7 +79,13 @@ fun CryptoDetailScreen(
         ) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Button(
-                    onClick = { /* Sem operação conforme solicitado */ },
+                    onClick = {
+                        val state = detailState
+                        if (state is CryptoDetailUiState.Success && crypto != null) {
+                            viewModel.startBuyFlow(crypto, state.detail.last.toDoubleOrNull() ?: 0.0)
+                            onNavigateToBuy()
+                        }
+                    },
                     shape = roundedButtonShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,

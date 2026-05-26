@@ -10,8 +10,11 @@ import com.example.bankapp.data.local.room.entities.CryptoAsset
 import com.example.bankapp.data.local.room.entities.Transaction
 import com.example.bankapp.data.models.CryptoItem
 import com.example.bankapp.data.repositories.ApiRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -35,6 +38,12 @@ class CryptoViewModel(
 
     private val _detailState = MutableStateFlow<CryptoDetailUiState>(CryptoDetailUiState.Idle)
     val detailState: StateFlow<CryptoDetailUiState> = _detailState
+
+    private val _buyState = MutableStateFlow<BuyUiState>(BuyUiState.Idle)
+    val buyState: StateFlow<BuyUiState> = _buyState
+
+    private val _buyEvents = MutableSharedFlow<BuyEvent>()
+    val buyEvents: SharedFlow<BuyEvent> = _buyEvents.asSharedFlow()
 
     fun fetchCryptos() {
         viewModelScope.launch {
@@ -70,7 +79,30 @@ class CryptoViewModel(
         return _allCryptos.find { it.id == id }
     }
 
-    fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
+    fun startBuyFlow(crypto: CryptoItem, price: Double) {
+        _buyState.value = BuyUiState.CryptoSelected(crypto, price)
+    }
+
+    fun setBuyAmount(amount: Double) {
+        val currentState = _buyState.value
+        if (currentState is BuyUiState.CryptoSelected) {
+            _buyState.value = BuyUiState.QuantityInputed(currentState.crypto, amount, currentState.price)
+        }
+    }
+
+    fun confirmBuy() {
+        val currentState = _buyState.value
+        if (currentState is BuyUiState.QuantityInputed) {
+            buyCrypto(
+                currentState.crypto.id,
+                currentState.crypto.symbol,
+                currentState.amount,
+                currentState.price
+            )
+        }
+    }
+
+    private fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
         viewModelScope.launch {
             val userId = userPreferences.userId.first() ?: return@launch
             val totalCost = amount * price
@@ -109,8 +141,16 @@ class CryptoViewModel(
                         )
                     )
                 }
+                _buyEvents.emit(BuyEvent.Success)
+                _buyState.value = BuyUiState.Idle
+            } else {
+                _buyEvents.emit(BuyEvent.Error("Saldo insuficiente"))
             }
         }
+    }
+
+    fun resetBuyProcess() {
+        _buyState.value = BuyUiState.Idle
     }
 }
 
@@ -125,4 +165,15 @@ sealed class CryptoDetailUiState {
     object Loading : CryptoDetailUiState()
     data class Success(val detail: com.example.bankapp.data.models.CryptoDetail) : CryptoDetailUiState()
     data class Error(val message: String) : CryptoDetailUiState()
+}
+
+sealed class BuyUiState {
+    object Idle : BuyUiState()
+    data class CryptoSelected(val crypto: CryptoItem, val price: Double) : BuyUiState()
+    data class QuantityInputed(val crypto: CryptoItem, val amount: Double, val price: Double) : BuyUiState()
+}
+
+sealed class BuyEvent {
+    object Success : BuyEvent()
+    data class Error(val message: String) : BuyEvent()
 }

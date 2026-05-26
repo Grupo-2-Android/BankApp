@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -48,6 +50,7 @@ fun TransactionHistoryScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
+                title = { Text("Meu Extrato", color = Color.White) },
                 title = {
                     Text(
                         text = stringResource(R.string.transaction_history_title),
@@ -73,6 +76,7 @@ fun TransactionHistoryScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
+                Text("Nenhuma movimentação encontrada", color = Color.Gray)
                 Text(stringResource(R.string.transaction_history_empty))
             }
         } else {
@@ -83,7 +87,8 @@ fun TransactionHistoryScreen(
             ) {
                 items(transactions) { transaction ->
                     TransactionItem(transaction)
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    HorizontalDivider(color = Color.DarkGray, thickness = 0.5.dp)
+                    // TODO:  HorizontalDivider(color = MaterialTheme.colorScheme.outline)
                 }
             }
         }
@@ -92,6 +97,10 @@ fun TransactionHistoryScreen(
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
+    val isNegative = transaction.operation == "BUY"
+    val color = if (isNegative) Color.Red else Color(0xFF4CAF50)
+    val prefix = if (isNegative) "-" else "+"
+
     val datePattern = stringResource(R.string.transaction_history_date_pattern)
     val formattedAmount = String.format(Locale.US, "%.2f", transaction.amount)
 
@@ -102,31 +111,35 @@ fun TransactionItem(transaction: Transaction) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.description,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(
-                text = formatDate(transaction.date, datePattern),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = stringResource(R.string.transaction_history_type, transaction.operation),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row {
+                Text(
+                    text = formatDate(transaction.date, datePattern),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (transaction.operation == "BUY") "COMPRA" else "VENDA"
+                    text = stringResource(R.string.transaction_history_type, transaction.operation),
+                    fontSize = 12.sp,
+                    color = color
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
         Text(
-            text = if (transaction.operation == "BUY") {
-                stringResource(R.string.transaction_history_amount_buy, formattedAmount)
-            } else {
-                stringResource(R.string.transaction_history_amount_default, formattedAmount)
-            },
+            text = "$prefix R$ ${String.format(Locale("pt", "BR"), "%,.2f", transaction.amount)}",
             fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = color
             color = if (transaction.operation == "BUY") MaterialTheme.colorScheme.error else GreenPrimary
         )
     }

@@ -26,10 +26,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,18 +64,97 @@ import com.example.bankapp.presentation.viewmodels.LoginViewModel
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
+    logoutMessage: String? = null,
     viewModel: LoginViewModel = viewModel()
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+
+    var username by remember {
+        mutableStateOf("")
+    }
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
+    var usernameError by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    var passwordError by remember {
+        mutableStateOf<String?>(null)
+    }
+
     val loginState by viewModel.loginState.collectAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginStatus.Success) {
-            onLoginSuccess()
-            viewModel.resetState()
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
+    fun sanitize(input: String): String {
+
+        val emojiRegex = Regex("[\\p{So}\\p{Cn}\\p{Cs}]")
+
+        return input
+            .replace("\n", "")
+            .replace(emojiRegex, "")
+    }
+
+    fun validateUsername(value: String): String? {
+
+        return when {
+
+            value.isBlank() ->
+                "Usuário não pode ser vazio"
+
+            value.trim() != value ->
+                "Não use espaços no início ou fim"
+
+            value.contains("  ") ->
+                "Não use espaços duplos"
+
+            else -> null
         }
     }
+
+    fun validatePassword(value: String): String? {
+
+        return when {
+
+            value.length < 6 ->
+                "Senha deve ter no mínimo 6 caracteres"
+
+            else -> null
+        }
+    }
+
+    LaunchedEffect(loginState) {
+        when (val state = loginState) {
+            is LoginStatus.Success -> {
+                onLoginSuccess()
+                viewModel.resetState()
+            }
+            is LoginStatus.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetState()
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(logoutMessage) {
+
+        logoutMessage?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
+
+        containerColor = Color.Black
+    ) { padding ->
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -114,9 +213,17 @@ fun LoginScreen(
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                             errorBorderColor = MaterialTheme.colorScheme.error
                         )
-                    )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        if (usernameError != null) {
+                            Text(
+                                text = usernameError!!,
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
                         value = password,
@@ -150,9 +257,68 @@ fun LoginScreen(
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
+                        if (passwordError != null) {
+
+                            Text(
+                                text = passwordError!!,
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
+                        Button(
+                            onClick = {
+
+                                usernameError =
+                                    validateUsername(username)
+
+                                passwordError =
+                                    validatePassword(password)
+
+                                if (
+                                    usernameError == null &&
+                                    passwordError == null
+                                ) {
+
+                                    viewModel.login(
+                                        username,
+                                        password
+                                    )
+                                }
+                            },
+
+                            modifier = Modifier.fillMaxWidth(),
+
+                            enabled =
+                                loginState !is LoginStatus.Loading,
+
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF4CAF50),
+                                contentColor = Color.White
+                            ),
+
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+
+                            if (loginState is LoginStatus.Loading) {
+
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+
+                            } else {
+
+                                Text(
+                                    text = "Entrar",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
                     Button(
                         onClick = {
                             viewModel.login(username, password)
@@ -191,6 +357,9 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     BankAppTheme {
-        LoginScreen(onLoginSuccess = {})
+
+        LoginScreen(
+            onLoginSuccess = {}
+        )
     }
 }

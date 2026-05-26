@@ -28,27 +28,48 @@ class LoginViewModel(
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginStatus.Loading
+
             try {
-                val request = LoginRequest(login = username, password = password)
+
+                val request = LoginRequest(
+                    login = username,
+                    password = password
+                )
+
                 val response = repository.fetchLogin(request)
                 if (response.message == ctx.getString(R.string.login_vm_success_message)) {
                     val userId = response.id ?: ""
                     val name = response.name ?: ""
-                    
-                    // Save to DataStore
+
                     userPreferences.saveUser(userId, name)
-                    
-                    // Initialize Room UserAccount if not exists
+
+                    // Room cache local
                     val dao = database.bankDao()
                     val existingUser = dao.getUserById(userId)
+
                     if (existingUser == null) {
-                        dao.insertUser(UserAccount(id = userId, name = name))
+                        dao.insertUser(
+                            UserAccount(
+                                id = userId,
+                                name = name
+                            )
+                        )
                     }
 
                     _loginState.value = LoginStatus.Success
+
                 } else {
                     _loginState.value = LoginStatus.Error(response.message)
                 }
+
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val message = try {
+                    com.google.gson.Gson().fromJson(errorBody, com.example.bankapp.data.models.LoginResponse::class.java).message
+                } catch (ex: Exception) {
+                    "Usuário ou senha inválidos"
+                }
+                _loginState.value = LoginStatus.Error(message)
             } catch (e: Exception) {
                 _loginState.value = LoginStatus.Error(e.message ?: ctx.getString(R.string.login_vm_error_generic))
             }

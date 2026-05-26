@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -70,14 +71,11 @@ fun DashboardScreen(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-
         drawerContent = {
-
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxHeight(),
                 drawerContainerColor = MaterialTheme.colorScheme.surface
             ) {
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
@@ -103,22 +101,16 @@ fun DashboardScreen(
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
                 NavigationDrawerItem(
-
                     label = {
                         Text(stringResource(R.string.common_cryptos), color = MaterialTheme.colorScheme.onSurface)
                     },
-
                     selected = false,
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
+                            navController.navigate("crypto_list")
                         }
-
-                        onNavigateToCryptos(navController = navController)
                     },
-
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = GreenPrimary,
@@ -128,22 +120,54 @@ fun DashboardScreen(
                 )
 
                 NavigationDrawerItem(
-
                     label = {
                         Text(stringResource(R.string.common_my_cryptos), color = MaterialTheme.colorScheme.onSurface)
                     },
-
                     selected = false,
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
+                            navController.navigate("my_cryptos")
                         }
-
-                        onNavigateToMyCryptos(navController = navController)
                     },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        unselectedTextColor = Color.White,
+                        selectedTextColor = Color.White
+                    )
+                )
 
+                NavigationDrawerItem(
+                    label = {
+                        Text("Cartões", color = Color.White)
+                    },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate("cards")
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        unselectedTextColor = Color.White,
+                        selectedTextColor = Color.White
+                    )
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Text("Meu Extrato", color = Color.White)
+                    },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate("transaction_history")
+                        }
+                    },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = GreenPrimary,
@@ -159,31 +183,23 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 NavigationDrawerItem(
-
                     label = {
                         Text(stringResource(R.string.dashboard_logout), color = MaterialTheme.colorScheme.onSurface)
                     },
-
                     selected = false,
-
                     icon = {
-
                         Icon(
                             Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = stringResource(R.string.dashboard_logout_content_description),
                             tint = GreenPrimary
                         )
                     },
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
                         }
-
                         onLogout()
                     },
-
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = GreenPrimary,
@@ -194,37 +210,27 @@ fun DashboardScreen(
             }
         }
     ) {
-
         Scaffold(
-
             containerColor = MaterialTheme.colorScheme.background,
-
             snackbarHost = {
                 SnackbarHost(snackbarHostState)
             },
-
             topBar = {
-
                 TopAppBar(
-
                     title = {
                         Text(
                             text = stringResource(R.string.common_dashboard),
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     },
-
                     navigationIcon = {
-
                         IconButton(
                             onClick = {
-
                                 scope.launch {
                                     drawerState.open()
                                 }
                             }
                         ) {
-
                             Icon(
                                 Icons.Default.Menu,
                                 contentDescription = stringResource(R.string.common_menu),
@@ -232,7 +238,6 @@ fun DashboardScreen(
                             )
                         }
                     },
-
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -240,27 +245,19 @@ fun DashboardScreen(
                 )
             }
         ) { padding ->
-
             Column(
-
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .padding(24.dp),
-
                 horizontalAlignment = Alignment.CenterHorizontally,
-
                 verticalArrangement = Arrangement.Center
-
             ) {
-
-                userAccount?.let { account ->
-                    val formattedBalance = String.format(
-                        Locale("pt", "BR"),
-                        "%,.2f",
-                        account.balance
+                if (userAccount == null) {
+                    CircularProgressIndicator(
+                        color = Color(0xFF4CAF50)
                     )
-
+                } else {
                     Text(
                         text = stringResource(R.string.dashboard_greeting_with_name_exclamation, account.name),
                         style = MaterialTheme.typography.headlineMedium,
@@ -268,7 +265,11 @@ fun DashboardScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
+                    val formattedBalance = String.format(
+                        Locale("pt", "BR"),
+                        "%,.2f",
+                        userAccount!!.balance
+                    )
                     Text(
                         text = stringResource(R.string.dashboard_balance, formattedBalance),
                         style = MaterialTheme.typography.titleLarge,
@@ -287,21 +288,15 @@ fun DashboardScreen(
                 )
 
                 Button(
-                    onClick = { onNavigateToCryptos(navController = navController) },
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        ,
-
+                    onClick = { navController.navigate("crypto_list") },
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-
                     shape = RoundedCornerShape(12.dp)
 
                 ) {
-
                     Text(
                         text = stringResource(R.string.common_cryptos),
                         fontWeight = FontWeight.Bold,
@@ -312,22 +307,15 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-
-                    onClick = { onNavigateToMyCryptos(navController = navController) },
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        ,
-
+                    onClick = { navController.navigate("my_cryptos") },
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-
                     shape = RoundedCornerShape(12.dp)
 
                 ) {
-
                     Text(
                         text = stringResource(R.string.common_my_cryptos),
                         fontWeight = FontWeight.Bold,
@@ -339,9 +327,7 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("cards") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        ,
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -354,15 +340,29 @@ fun DashboardScreen(
                         fontSize = 16.sp
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("transaction_history") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4CAF50),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Meu Extrato",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
-}
-
-private fun onNavigateToCryptos(navController: NavController) {
-    navController.navigate("crypto_list")
-}
-
-private fun onNavigateToMyCryptos(navController: NavController) {
-    navController.navigate("my_cryptos")
 }
