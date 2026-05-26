@@ -34,6 +34,13 @@ class ViewModelFactory(
                 database = database
             ) as T
         }
+        if (modelClass.isAssignableFrom(MyPortfolioViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MyPortfolioViewModel(
+                userPreferences = userPreferences,
+                database = database
+            ) as T
+        }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
