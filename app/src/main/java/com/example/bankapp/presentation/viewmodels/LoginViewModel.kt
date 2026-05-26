@@ -58,12 +58,18 @@ class LoginViewModel(
                     _loginState.value = LoginStatus.Success
 
                 } else {
-
                     _loginState.value = LoginStatus.Error(response.message)
                 }
 
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val message = try {
+                    com.google.gson.Gson().fromJson(errorBody, com.example.bankapp.data.models.LoginResponse::class.java).message
+                } catch (ex: Exception) {
+                    "Usuário ou senha inválidos"
+                }
+                _loginState.value = LoginStatus.Error(message)
             } catch (e: Exception) {
-
                 _loginState.value =
                     LoginStatus.Error(e.message ?: "Ocorreu um erro")
             }

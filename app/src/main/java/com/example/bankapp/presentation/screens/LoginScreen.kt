@@ -109,11 +109,16 @@ fun LoginScreen(
     }
 
     LaunchedEffect(loginState) {
-
-        if (loginState is LoginStatus.Success) {
-
-            onLoginSuccess()
-            viewModel.resetState()
+        when (val state = loginState) {
+            is LoginStatus.Success -> {
+                onLoginSuccess()
+                viewModel.resetState()
+            }
+            is LoginStatus.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetState()
+            }
+            else -> {}
         }
     }
 
