@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bankapp.presentation.AppNavigation
 import com.example.bankapp.presentation.theme.BankAppTheme
 
@@ -22,37 +23,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val snackbarHostState = remember { SnackbarHostState() }
-
             BankAppTheme {
-
-                val navController = rememberNavController()
-                val context = LocalContext.current
-
-                val userPreferences = remember {
-                    UserPreferences(context)
-                }
-
-                val database = remember {
-                    AppDatabase.getDatabase(context)
-                }
-
-                val factory = remember {
-                    ViewModelFactory(userPreferences, database)
-                }
-
-                val cryptoViewModel: CryptoViewModel =
-                    viewModel(factory = factory)
-
-                val portfolioViewModel: MyPortfolioViewModel =
-                    viewModel()
-                    viewModel(factory = factory)
-
-                val userName by portfolioViewModel.userName.collectAsState()
-
-                val snackbarHostState = remember {
-                    SnackbarHostState()
-                }
+                val snackbarHostState = remember { SnackbarHostState() }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
