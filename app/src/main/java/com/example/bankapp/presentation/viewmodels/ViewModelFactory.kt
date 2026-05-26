@@ -1,19 +1,24 @@
 package com.example.bankapp.presentation.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
-import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 
 class ViewModelFactory(
+    private val application: Application,
     private val userPreferences: UserPreferences,
     private val database: AppDatabase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(userPreferences = userPreferences, database = database) as T
+            return LoginViewModel(
+                application = application,
+                userPreferences = userPreferences,
+                database = database
+            ) as T
         }
         if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
@@ -21,7 +26,11 @@ class ViewModelFactory(
         }
         if (modelClass.isAssignableFrom(CryptoViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CryptoViewModel(userPreferences = userPreferences, database = database) as T
+            return CryptoViewModel(
+                application = application,
+                userPreferences = userPreferences,
+                database = database
+            ) as T
         }
         if (modelClass.isAssignableFrom(TransactionHistoryViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
@@ -30,9 +39,14 @@ class ViewModelFactory(
         if (modelClass.isAssignableFrom(CardManagementViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return CardManagementViewModel(
+                application = application,
                 userPreferences = userPreferences,
                 database = database
             ) as T
+        }
+        if (modelClass.isAssignableFrom(MyPortfolioViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MyPortfolioViewModel() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

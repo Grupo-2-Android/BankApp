@@ -27,7 +27,7 @@ import com.example.bankapp.presentation.theme.PhysicalCardColor
 import com.example.bankapp.presentation.theme.VirtualCardColor
 import com.example.bankapp.presentation.utils.formatCardNumber
 import com.example.bankapp.presentation.utils.hideCardNumber
-import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
+import com.example.bankapp.presentation.viewmodels.CardManagementViewModel
 
 @Composable
 fun CardItem(card: Card, isAdding: Boolean = false) {

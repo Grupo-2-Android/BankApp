@@ -1,20 +1,43 @@
 package com.example.bankapp.presentation.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bankapp.presentation.theme.BankAppTheme
-
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.bankapp.R
+import com.example.bankapp.presentation.theme.BankAppTheme
+import com.example.bankapp.presentation.theme.GreenPrimary
 import com.example.bankapp.presentation.viewmodels.LoginStatus
 import com.example.bankapp.presentation.viewmodels.LoginViewModel
 
@@ -36,7 +59,7 @@ fun LoginScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Black
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
@@ -46,24 +69,24 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "BankApp",
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = 40.sp
             )
 
             Text(
-                text = "Seu banco digital seguro",
+                text = stringResource(R.string.login_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 40.dp)
             )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1A1A1A)
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -76,15 +99,20 @@ fun LoginScreen(
                             username = it
                             if (loginState is LoginStatus.Error) viewModel.resetState()
                         },
-                        label = { Text("Usuário", color = Color.Gray) },
+                        label = {
+                            Text(
+                                stringResource(R.string.login_username),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         isError = loginState is LoginStatus.Error,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFF4CAF50),
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedBorderColor = GreenPrimary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
                     )
 
@@ -96,23 +124,28 @@ fun LoginScreen(
                             password = it
                             if (loginState is LoginStatus.Error) viewModel.resetState()
                         },
-                        label = { Text("Senha", color = Color.Gray) },
+                        label = {
+                            Text(
+                                stringResource(R.string.login_password),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         isError = loginState is LoginStatus.Error,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFF4CAF50),
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedBorderColor = GreenPrimary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
                     )
 
                     if (loginState is LoginStatus.Error) {
                         Text(
                             text = (loginState as LoginStatus.Error).message,
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(top = 8.dp)
                         )
@@ -127,20 +160,22 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = loginState !is LoginStatus.Loading,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50),
-                            contentColor = Color.White
+                            containerColor = GreenPrimary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
                         ),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         if (loginState is LoginStatus.Loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
-                                text = "Entrar",
+                                text = stringResource(R.string.login_enter),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )

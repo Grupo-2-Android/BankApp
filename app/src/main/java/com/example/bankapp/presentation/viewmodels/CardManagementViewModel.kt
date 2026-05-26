@@ -1,12 +1,14 @@
-package com.example.bankapp.presentation.viewmodels.cards
+package com.example.bankapp.presentation.viewmodels
 
-import com.example.bankapp.data.local.room.entities.Card
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.br.scan_card.CreditCardData
+import com.example.bankapp.R
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
+import com.example.bankapp.data.local.room.entities.Card
 import com.example.bankapp.data.repositories.ApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,10 +20,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CardManagementViewModel(
+    application: Application,
     private val repository: ApiRepository = ApiRepository(),
     private val userPreferences: UserPreferences,
     private val database: AppDatabase
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    private val ctx get() = getApplication<Application>()
 
     private val TAG = "CardManagementViewModel"
 
@@ -72,7 +77,7 @@ class CardManagementViewModel(
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching virtual card: ${e.message}")
-                _error.value = "Erro ao gerar cartão virtual. Tente novamente."
+                _error.value = ctx.getString(R.string.cards_vm_error_generate_virtual)
             }
             _addCardUiState.update { AddCardUiState.Content }
         }
@@ -87,10 +92,10 @@ class CardManagementViewModel(
                 _previewCard.value = Card(
                     userId = userId,
                     type = TYPE_PHYSICAL,
-                    number = "****************",
-                    expiration = "MM/AA",
-                    cvv = "***",
-                    brand = "BANDEIRA"
+                    number = ctx.getString(R.string.add_card_placeholder_number),
+                    expiration = ctx.getString(R.string.cards_vm_placeholder_expiration),
+                    cvv = ctx.getString(R.string.add_card_placeholder_cvv),
+                    brand = ctx.getString(R.string.cards_vm_placeholder_brand)
                 )
                 return@launch
             } else {
@@ -112,16 +117,21 @@ class CardManagementViewModel(
         viewModelScope.launch {
             val cardToInsert = _previewCard.value
             if (cardToInsert == null) {
-                _error.value = "Houve uma falha ao gerar cartão."
+                _error.value = ctx.getString(R.string.cards_vm_error_generate_failed)
             } else {
                 // Validação final de segurança antes de inserir no banco
                 val currentCards = _cards.value
                 if (currentCards.size >= 2) {
-                    _error.value = "Limite de 2 cartões atingido."
+                    _error.value = ctx.getString(R.string.cards_vm_error_limit_reached)
                     return@launch
                 }
                 if (currentCards.any { it.type == cardToInsert.type }) {
-                    _error.value = "Você já possui um cartão do tipo ${if(cardToInsert.type == TYPE_PHYSICAL) "Físico" else "Virtual"}."
+                    val typeLabel = if (cardToInsert.type == TYPE_PHYSICAL) {
+                        ctx.getString(R.string.common_physical)
+                    } else {
+                        ctx.getString(R.string.common_virtual)
+                    }
+                    _error.value = ctx.getString(R.string.cards_vm_error_type_already_exists, typeLabel)
                     return@launch
                 }
 
@@ -142,7 +152,7 @@ class CardManagementViewModel(
 
     fun canAddType(type: String): Boolean {
         if (_cards.value.size >= 2) {
-            _error.value = "Limite de 2 cartões atingido."
+            _error.value = ctx.getString(R.string.cards_vm_error_limit_reached)
             return false
         }
 
@@ -152,7 +162,7 @@ class CardManagementViewModel(
         return when (type) {
             TYPE_VIRTUAL -> {
                 if (alreadyHasVirtual) {
-                    _error.value = "Você já possui um cartão virtual."
+                    _error.value = ctx.getString(R.string.cards_vm_error_virtual_exists)
                     false
                 } else {
                     true
@@ -161,7 +171,7 @@ class CardManagementViewModel(
 
             TYPE_PHYSICAL -> {
                 if (alreadyHasPhysical) {
-                    _error.value = "Você já possui um cartão físico."
+                    _error.value = ctx.getString(R.string.cards_vm_error_physical_exists)
                     false
                 } else {
                     true
@@ -169,7 +179,7 @@ class CardManagementViewModel(
             }
 
             else -> {
-                _error.value = "Tipo de cartão inválido."
+                _error.value = ctx.getString(R.string.cards_vm_error_invalid_type)
                 false
             }
         }
@@ -179,10 +189,9 @@ class CardManagementViewModel(
         viewModelScope.launch {
             try {
                 database.bankDao().deleteCard(card)
-                // loadCards() é desnecessário aqui pois já temos um coletor ativo
             } catch (e: Exception) {
                 Log.e(TAG, "Error deleting card: ${e.message}")
-                _error.value = "Erro ao deletar cartão. Tente novamente."
+                _error.value = ctx.getString(R.string.cards_vm_error_delete_failed)
             }
         }
     }
@@ -191,4 +200,9 @@ class CardManagementViewModel(
         const val TYPE_VIRTUAL = "VIRTUAL"
         const val TYPE_PHYSICAL = "PHYSICAL"
     }
+}
+
+sealed class AddCardUiState {
+    data object Loading : AddCardUiState()
+    data object Content : AddCardUiState()
 }

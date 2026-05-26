@@ -1,8 +1,9 @@
 package com.example.bankapp.presentation.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bankapp.R
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.data.local.room.entities.UserAccount
@@ -13,10 +14,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    application: Application,
     private val repository: ApiRepository = ApiRepository(),
     private val userPreferences: UserPreferences,
     private val database: AppDatabase
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    private val ctx get() = getApplication<Application>()
 
     private val _loginState = MutableStateFlow<LoginStatus>(LoginStatus.Idle)
     val loginState: StateFlow<LoginStatus> = _loginState
@@ -27,7 +31,7 @@ class LoginViewModel(
             try {
                 val request = LoginRequest(login = username, password = password)
                 val response = repository.fetchLogin(request)
-                if (response.message == "Login realizado com sucesso") {
+                if (response.message == ctx.getString(R.string.login_vm_success_message)) {
                     val userId = response.id ?: ""
                     val name = response.name ?: ""
                     
@@ -46,7 +50,7 @@ class LoginViewModel(
                     _loginState.value = LoginStatus.Error(response.message)
                 }
             } catch (e: Exception) {
-                _loginState.value = LoginStatus.Error(e.message ?: "Ocorreu um erro")
+                _loginState.value = LoginStatus.Error(e.message ?: ctx.getString(R.string.login_vm_error_generic))
             }
         }
     }

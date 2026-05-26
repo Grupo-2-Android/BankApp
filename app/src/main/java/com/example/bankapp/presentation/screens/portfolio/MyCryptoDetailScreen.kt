@@ -1,38 +1,100 @@
 package com.example.bankapp.presentation.screens.portfolio
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bankapp.R
+import com.example.bankapp.presentation.theme.GreenPrimary
 import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
 import com.example.bankapp.presentation.viewmodels.SaleUiState
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, onNavigateToSellQuantity: () -> Unit) {
     val saleState by viewModel.saleState.collectAsState()
     if (saleState !is SaleUiState.CryptoSelected) { onBack(); return }
     val owned = (saleState as SaleUiState.CryptoSelected).ownedCrypto
+    val totalValueBRL = owned.quantity * owned.currentPrice
+    val formattedTotalValue = String.format(Locale.GERMANY, "%,.2f", totalValueBRL)
+    val roundedButtonShape = RoundedCornerShape(12.dp)
 
-    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)) { Text("Voltar") }
-                Button(onClick = onNavigateToSellQuantity, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) { Text("Vender") }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.common_my_cryptos)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.common_back)
+                        )
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                Button(
+                    onClick = onNavigateToSellQuantity,
+                    shape = roundedButtonShape,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = GreenPrimary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(stringResource(R.string.sell_action))
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Text("Sua posição: ${owned.cryptoInfo.symbol}", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(R.string.portfolio_position, owned.cryptoInfo.symbol),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            DetailItemPortfolio(label = "Quantidade em Carteira", value = String.format(Locale.US, "%.3f", owned.quantity))
-            val totalValueBRL = owned.quantity * owned.currentPrice
-            DetailItemPortfolio(label = "Valor Atual Estimado (BRL)", value = "R$ ${String.format(Locale.GERMANY, "%,.2f", totalValueBRL)}")
+            DetailItemPortfolio(
+                label = stringResource(R.string.portfolio_wallet_quantity),
+                value = String.format(Locale.US, "%.3f", owned.quantity)
+            )
+            DetailItemPortfolio(
+                label = stringResource(R.string.portfolio_estimated_value_brl),
+                value = stringResource(R.string.common_currency_prefix, formattedTotalValue)
+            )
         }
     }
 }
@@ -40,7 +102,12 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
 @Composable
 fun DetailItemPortfolio(label: String, value: String) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(text = label, color = Color.Gray, fontSize = 14.sp)
-        Text(text = value, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+        Text(text = label, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+        Text(
+            text = value,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
