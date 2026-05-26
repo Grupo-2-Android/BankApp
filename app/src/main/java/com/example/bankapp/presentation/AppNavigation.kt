@@ -113,6 +113,7 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
         composable("crypto_list") {
             CryptoListScreen(
                 viewModel = cryptoViewModel,
+                onBack = { navController.popBackStack() },
                 onCryptoClick = { cryptoId -> navController.navigate("crypto_detail/$cryptoId") }
             )
         }
@@ -169,7 +170,12 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
         composable("sell_checkout") {
             SellCheckoutScreen(
                 viewModel = portfolioViewModel,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onCancel = {
+                    navController.navigate("my_cryptos") {
+                        popUpTo("my_cryptos") { inclusive = true }
+                    }
+                }
             )
         }
 

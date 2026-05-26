@@ -49,7 +49,14 @@ class MyPortfolioViewModel(
                         ohlc_available_from = "",
                         history_available_from = ""
                     )
-                    val currentPrice = 0.0
+                    
+                    // Busca preço real da API
+                    val currentPrice = try {
+                        val response = repository.getCryptoData(asset.symbol)
+                        response.symbols.firstOrNull()?.last?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
+                    } catch (e: Exception) {
+                        0.0
+                    }
 
                     OwnedCrypto(
                         cryptoInfo = cryptoInfo,
@@ -85,24 +92,39 @@ class MyPortfolioViewModel(
                 val userId = userPreferences.userId.first() ?: return@launch
                 val dao = database.bankDao()
                 
-                // Lógica de venda no banco
+                val totalReceive = currentState.quantityToSell * currentState.ownedCrypto.currentPrice
+                
+                // 1. Atualizar saldo do usuário
+                val user = dao.getUserById(userId)
+                if (user != null) {
+                    dao.updateUser(user.copy(balance = user.balance + totalReceive))
+                }
+
+                // 2. Atualizar Assets
                 val asset = dao.getCryptoAssetsByUser(userId).first().find { it.cryptoId == currentState.ownedCrypto.cryptoInfo.id }
                 if (asset != null) {
                     val newAmount = asset.amount - currentState.quantityToSell
                     if (newAmount > 0) {
                         dao.upsertCryptoAsset(asset.copy(amount = newAmount))
                     } else {
-                        // Idealmente um delete, mas upsert 0 funciona ou podemos implementar delete no DAO
                         dao.upsertCryptoAsset(asset.copy(amount = 0.0))
                     }
-
-                    // Adicionar transação de venda e atualizar saldo (simplificado aqui para focar na listagem)
-                    // ...
                 }
-            }
 
-            _saleEvents.emit(SaleEvent.Success)
-            _saleState.value = SaleUiState.Idle
+                // 3. Registrar Transação
+                dao.insertTransaction(
+                    com.example.bankapp.data.local.room.entities.Transaction(
+                        userId = userId,
+                        amount = totalReceive,
+                        description = "Venda de ${currentState.quantityToSell} ${currentState.ownedCrypto.cryptoInfo.symbol}",
+                        date = System.currentTimeMillis(),
+                        operation = "SELL"
+                    )
+                )
+
+                _saleEvents.emit(SaleEvent.Success)
+                _saleState.value = SaleUiState.Idle
+            }
         }
     }
 

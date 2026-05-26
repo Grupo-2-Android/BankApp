@@ -20,6 +20,7 @@ import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 @Composable
 fun CryptoListScreen(
     onCryptoClick: (String) -> Unit,
+    onBack: () -> Unit,
     viewModel: CryptoViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -29,13 +30,27 @@ fun CryptoListScreen(
         color = Color.Black
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Cryptos",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = onBack,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Text("Voltar")
+                }
+
+                Text(
+                    text = "Cryptos",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             when (val state = uiState) {
                 is CryptoUiState.Loading -> {

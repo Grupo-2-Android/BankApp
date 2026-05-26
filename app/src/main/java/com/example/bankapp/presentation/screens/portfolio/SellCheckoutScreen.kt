@@ -19,6 +19,7 @@ import java.util.Locale
 @Composable
 fun SellCheckoutScreen(
     viewModel: MyPortfolioViewModel,
+    onCancel: () -> Unit,
     onBack: () -> Unit
 ) {
     val saleState by viewModel.saleState.collectAsState()
@@ -40,7 +41,7 @@ fun SellCheckoutScreen(
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
-                    onClick = onBack,
+                    onClick = onCancel,
                     modifier = Modifier.align(Alignment.CenterStart),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                 ) {
