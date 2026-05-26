@@ -41,6 +41,17 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
     val cardManagementViewModel: CardManagementViewModel = viewModel(factory = factory)
 
     LaunchedEffect(Unit) {
+        // Verificar sessão persistente
+        userPreferences.isLoggedIn.collect { loggedIn ->
+            if (loggedIn && navController.currentDestination?.route == "login") {
+                navController.navigate("dashboard") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
         portfolioViewModel.saleEvents.collect { event ->
             when (event) {
                 is SaleEvent.Success -> {
