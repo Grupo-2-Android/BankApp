@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -66,16 +67,12 @@ fun DashboardScreen(
     }
 
     ModalNavigationDrawer(
-
         drawerState = drawerState,
-
         drawerContent = {
-
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxHeight(),
                 drawerContainerColor = Color(0xFF1E1E1E)
             ) {
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
@@ -98,22 +95,16 @@ fun DashboardScreen(
                 HorizontalDivider(color = Color.Gray)
 
                 NavigationDrawerItem(
-
                     label = {
                         Text("Cryptos", color = Color.White)
                     },
-
                     selected = false,
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
+                            navController.navigate("crypto_list")
                         }
-
-                        onNavigateToCryptos(navController = navController)
                     },
-
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = Color(0xFF4CAF50),
@@ -123,22 +114,16 @@ fun DashboardScreen(
                 )
 
                 NavigationDrawerItem(
-
                     label = {
                         Text("Minhas Cryptos", color = Color.White)
                     },
-
                     selected = false,
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
+                            navController.navigate("my_cryptos")
                         }
-
-                        onNavigateToMyCryptos(navController = navController)
                     },
-
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = Color(0xFF4CAF50),
@@ -154,31 +139,23 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 NavigationDrawerItem(
-
                     label = {
                         Text("Sair", color = Color.White)
                     },
-
                     selected = false,
-
                     icon = {
-
                         Icon(
                             Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Logout",
                             tint = Color(0xFF4CAF50)
                         )
                     },
-
                     onClick = {
-
                         scope.launch {
                             drawerState.close()
                         }
-
                         onLogout()
                     },
-
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
                         selectedContainerColor = Color(0xFF4CAF50),
@@ -189,37 +166,27 @@ fun DashboardScreen(
             }
         }
     ) {
-
         Scaffold(
-
             containerColor = Color.Black,
-
             snackbarHost = {
                 SnackbarHost(snackbarHostState)
             },
-
             topBar = {
-
                 TopAppBar(
-
                     title = {
                         Text(
                             text = "Dashboard",
                             color = Color.White
                         )
                     },
-
                     navigationIcon = {
-
                         IconButton(
                             onClick = {
-
                                 scope.launch {
                                     drawerState.open()
                                 }
                             }
                         ) {
-
                             Icon(
                                 Icons.Default.Menu,
                                 contentDescription = "Menu",
@@ -227,7 +194,6 @@ fun DashboardScreen(
                             )
                         }
                     },
-
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Black,
                         titleContentColor = Color.White
@@ -235,24 +201,21 @@ fun DashboardScreen(
                 )
             }
         ) { padding ->
-
             Column(
-
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .padding(24.dp),
-
                 horizontalAlignment = Alignment.CenterHorizontally,
-
                 verticalArrangement = Arrangement.Center
-
             ) {
-
-                userAccount?.let { account ->
-
+                if (userAccount == null) {
+                    CircularProgressIndicator(
+                        color = Color(0xFF4CAF50)
+                    )
+                } else {
                     Text(
-                        text = "Olá, ${account.name}!",
+                        text = "Olá, ${userAccount!!.name}!",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
@@ -264,7 +227,7 @@ fun DashboardScreen(
                             String.format(
                                 Locale("pt", "BR"),
                                 "%,.2f",
-                                account.balance
+                                userAccount!!.balance
                             )
                         }",
                         style = MaterialTheme.typography.titleLarge,
@@ -283,21 +246,16 @@ fun DashboardScreen(
                 )
 
                 Button(
-                    onClick = { onNavigateToCryptos(navController = navController) },
-
+                    onClick = { navController.navigate("crypto_list") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50),
                         contentColor = Color.White
                     ),
-
                     shape = RoundedCornerShape(8.dp)
-
                 ) {
-
                     Text(
                         text = "Cryptos",
                         fontWeight = FontWeight.Bold,
@@ -308,22 +266,16 @@ fun DashboardScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-
-                    onClick = { onNavigateToMyCryptos(navController = navController) },
-
+                    onClick = { navController.navigate("my_cryptos") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF4CAF50),
                         contentColor = Color.White
                     ),
-
                     shape = RoundedCornerShape(8.dp)
-
                 ) {
-
                     Text(
                         text = "Minhas Cryptos",
                         fontWeight = FontWeight.Bold,
@@ -353,12 +305,4 @@ fun DashboardScreen(
             }
         }
     }
-}
-
-private fun onNavigateToCryptos(navController: NavController) {
-    navController.navigate("crypto_list")
-}
-
-private fun onNavigateToMyCryptos(navController: NavController) {
-    navController.navigate("my_cryptos")
 }

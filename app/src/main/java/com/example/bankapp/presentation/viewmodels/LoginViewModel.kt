@@ -1,6 +1,5 @@
 package com.example.bankapp.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bankapp.data.local.datastore.UserPreferences
@@ -22,31 +21,51 @@ class LoginViewModel(
     val loginState: StateFlow<LoginStatus> = _loginState
 
     fun login(username: String, password: String) {
+
         viewModelScope.launch {
+
             _loginState.value = LoginStatus.Loading
+
             try {
-                val request = LoginRequest(login = username, password = password)
+
+                val request = LoginRequest(
+                    login = username,
+                    password = password
+                )
+
                 val response = repository.fetchLogin(request)
+
                 if (response.message == "Login realizado com sucesso") {
+
                     val userId = response.id ?: ""
                     val name = response.name ?: ""
-                    
-                    // Save to DataStore
+
                     userPreferences.saveUser(userId, name)
-                    
-                    // Initialize Room UserAccount if not exists
+
+                    // Room cache local
                     val dao = database.bankDao()
                     val existingUser = dao.getUserById(userId)
+
                     if (existingUser == null) {
-                        dao.insertUser(UserAccount(id = userId, name = name))
+                        dao.insertUser(
+                            UserAccount(
+                                id = userId,
+                                name = name
+                            )
+                        )
                     }
 
                     _loginState.value = LoginStatus.Success
+
                 } else {
+
                     _loginState.value = LoginStatus.Error(response.message)
                 }
+
             } catch (e: Exception) {
-                _loginState.value = LoginStatus.Error(e.message ?: "Ocorreu um erro")
+
+                _loginState.value =
+                    LoginStatus.Error(e.message ?: "Ocorreu um erro")
             }
         }
     }
@@ -56,9 +75,14 @@ class LoginViewModel(
     }
 }
 
+
 sealed class LoginStatus {
+
     object Idle : LoginStatus()
+
     object Loading : LoginStatus()
+
     object Success : LoginStatus()
+
     data class Error(val message: String) : LoginStatus()
 }
