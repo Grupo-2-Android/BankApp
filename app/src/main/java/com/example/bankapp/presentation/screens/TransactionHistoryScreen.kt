@@ -1,5 +1,6 @@
 package com.example.bankapp.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,14 +32,22 @@ fun TransactionHistoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Transaction History") },
+                title = { Text("Meu Extrato", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Voltar",
+                            tint = Color.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                )
             )
-        }
+        },
+        containerColor = Color.Black
     ) { padding ->
         if (transactions.isEmpty()) {
             Box(
@@ -47,7 +56,7 @@ fun TransactionHistoryScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No transactions found")
+                Text("Nenhuma movimentação encontrada", color = Color.Gray)
             }
         } else {
             LazyColumn(
@@ -57,7 +66,7 @@ fun TransactionHistoryScreen(
             ) {
                 items(transactions) { transaction ->
                     TransactionItem(transaction)
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color.DarkGray, thickness = 0.5.dp)
                 }
             }
         }
@@ -66,6 +75,10 @@ fun TransactionHistoryScreen(
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
+    val isNegative = transaction.operation == "BUY"
+    val color = if (isNegative) Color.Red else Color(0xFF4CAF50)
+    val prefix = if (isNegative) "-" else "+"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,33 +86,39 @@ fun TransactionItem(transaction: Transaction) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.description,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = Color.White
             )
-            Text(
-                text = formatDate(transaction.date),
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Text(
-                text = "Type: ${transaction.operation}",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row {
+                Text(
+                    text = formatDate(transaction.date),
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (transaction.operation == "BUY") "COMPRA" else "VENDA",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = color
+                )
+            }
         }
         Text(
-            text = if (transaction.operation == "BUY") "-$${String.format(Locale.US, "%.2f", transaction.amount)}" 
-                   else "$${String.format(Locale.US, "%.2f", transaction.amount)}",
+            text = "$prefix R$ ${String.format(Locale("pt", "BR"), "%,.2f", transaction.amount)}",
             fontWeight = FontWeight.Bold,
-            color = if (transaction.operation == "BUY") Color.Red else Color(0xFF4CAF50)
+            fontSize = 16.sp,
+            color = color
         )
     }
 }
 
 private fun formatDate(timestamp: Long): String {
-    val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }

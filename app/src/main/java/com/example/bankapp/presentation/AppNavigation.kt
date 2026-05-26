@@ -23,8 +23,10 @@ import com.example.bankapp.presentation.screens.portfolio.MyCryptoDetailScreen
 import com.example.bankapp.presentation.screens.portfolio.MyCryptosListScreen
 import com.example.bankapp.presentation.screens.portfolio.SellCheckoutScreen
 import com.example.bankapp.presentation.screens.portfolio.SellQuantityScreen
+import com.example.bankapp.presentation.screens.TransactionHistoryScreen
 import com.example.bankapp.presentation.viewmodels.BuyEvent
 import com.example.bankapp.presentation.viewmodels.DashboardViewModel
+import com.example.bankapp.presentation.viewmodels.TransactionHistoryViewModel
 import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
@@ -193,6 +195,14 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
                 onConfirmSuccess = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable("transaction_history") {
+            val transactionViewModel: TransactionHistoryViewModel = viewModel(factory = factory)
+            TransactionHistoryScreen(
+                viewModel = transactionViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
     }

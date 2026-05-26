@@ -30,7 +30,7 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
             Spacer(modifier = Modifier.height(24.dp))
             Text("Sua posição: ${owned.cryptoInfo.symbol}", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))
-            DetailItemPortfolio(label = "Quantidade em Carteira", value = String.format(Locale.US, "%.3f", owned.quantity))
+            DetailItemPortfolio(label = "Quantidade em Carteira", value = owned.quantity.toInt().toString())
             val totalValueBRL = owned.quantity * owned.currentPrice
             DetailItemPortfolio(label = "Valor Atual Estimado (BRL)", value = "R$ ${String.format(Locale.GERMANY, "%,.2f", totalValueBRL)}")
         }

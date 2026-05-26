@@ -132,6 +132,44 @@ fun DashboardScreen(
                     )
                 )
 
+                NavigationDrawerItem(
+                    label = {
+                        Text("Cartões", color = Color.White)
+                    },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate("cards")
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        unselectedTextColor = Color.White,
+                        selectedTextColor = Color.White
+                    )
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Text("Meu Extrato", color = Color.White)
+                    },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate("transaction_history")
+                        }
+                    },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xFF4CAF50),
+                        unselectedTextColor = Color.White,
+                        selectedTextColor = Color.White
+                    )
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 HorizontalDivider(color = Color.Gray)
@@ -302,6 +340,28 @@ fun DashboardScreen(
                         fontSize = 18.sp
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("transaction_history") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4CAF50),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Meu Extrato",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

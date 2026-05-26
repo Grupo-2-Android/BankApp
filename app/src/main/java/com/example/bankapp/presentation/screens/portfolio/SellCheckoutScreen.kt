@@ -66,7 +66,7 @@ fun SellCheckoutScreen(
                     SummaryRow(label = "Ativo", value = state.ownedCrypto.cryptoInfo.symbol)
                     HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(vertical = 12.dp))
 
-                    SummaryRow(label = "Quantidade a Vender", value = String.format(Locale.US, "%.3f", state.quantityToSell))
+                    SummaryRow(label = "Quantidade a Vender", value = state.quantityToSell.toInt().toString())
                     HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(vertical = 12.dp))
 
                     SummaryRow(label = "Cotação Atual", value = "R$ ${String.format(Locale.GERMANY, "%,.2f", state.ownedCrypto.currentPrice)}")

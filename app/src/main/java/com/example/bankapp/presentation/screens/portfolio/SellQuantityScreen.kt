@@ -64,7 +64,7 @@ fun SellQuantityScreen(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Disponível: ${String.format(Locale.US, "%.3f", owned.quantity)}",
+                text = "Disponível: ${owned.quantity.toInt()}",
                 color = Color.Gray,
                 modifier = Modifier.padding(vertical = 8.dp)
             )

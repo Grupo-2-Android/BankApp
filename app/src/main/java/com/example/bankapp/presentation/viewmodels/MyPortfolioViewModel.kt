@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
+import com.example.bankapp.data.local.room.entities.Transaction
 import com.example.bankapp.data.models.CryptoItem
 import com.example.bankapp.data.models.OwnedCrypto
 import com.example.bankapp.data.repositories.ApiRepository
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MyPortfolioViewModel(
-    private val userPreferences: UserPreferences,
+    val userPreferences: UserPreferences,
     private val database: AppDatabase,
     private val repository: ApiRepository = ApiRepository()
 ) : ViewModel() {
@@ -37,27 +38,46 @@ class MyPortfolioViewModel(
 
     private fun observeAssets() {
         viewModelScope.launch {
-            val userId = userPreferences.userId.first() ?: return@launch
-            database.bankDao().getCryptoAssetsByUser(userId).collectLatest { assets ->
-                val cryptoList = repository.getCryptoList().result
-                
-                val ownedList = assets.map { asset ->
-                    val cryptoInfo = cryptoList.find { it.id == asset.cryptoId } ?: CryptoItem(
-                        id = asset.cryptoId,
-                        symbol = asset.symbol,
-                        source = "",
-                        ohlc_available_from = "",
-                        history_available_from = ""
-                    )
-                    val currentPrice = 0.0
-
-                    OwnedCrypto(
-                        cryptoInfo = cryptoInfo,
-                        quantity = asset.amount,
-                        currentPrice = currentPrice
-                    )
+            userPreferences.userId.collectLatest { userId ->
+                if (userId == null) {
+                    _ownedCryptosState.value = emptyList()
+                    return@collectLatest
                 }
-                _ownedCryptosState.value = ownedList
+
+                // Usando collect direto aqui pois o collectLatest externo já trata a troca de usuário
+                database.bankDao().getCryptoAssetsByUser(userId).collect { assets ->
+                    try {
+                        val cryptoList = repository.getCryptoList().result
+                        
+                        val ownedList = assets
+                            .filter { it.amount > 0 }
+                            .map { asset ->
+                                val cryptoInfo = cryptoList.find { it.id == asset.cryptoId } ?: CryptoItem(
+                                    id = asset.cryptoId,
+                                    symbol = asset.symbol,
+                                    source = "",
+                                    ohlc_available_from = "",
+                                    history_available_from = ""
+                                )
+                                
+                                val detailResponse = try { 
+                                    repository.getCryptoData(asset.symbol) 
+                                } catch (e: Exception) { 
+                                    null 
+                                }
+                                val currentPrice = detailResponse?.symbols?.firstOrNull()?.last?.toDoubleOrNull() ?: 0.0
+
+                                OwnedCrypto(
+                                    cryptoInfo = cryptoInfo,
+                                    quantity = asset.amount,
+                                    currentPrice = currentPrice
+                                )
+                            }
+                        _ownedCryptosState.value = ownedList
+                    } catch (e: Exception) {
+                        _ownedCryptosState.value = emptyList()
+                    }
+                }
             }
         }
     }
@@ -85,19 +105,43 @@ class MyPortfolioViewModel(
                 val userId = userPreferences.userId.first() ?: return@launch
                 val dao = database.bankDao()
                 
+                // Buscar o preço atual para calcular o valor da venda
+                val cryptoList = repository.getCryptoList().result
+                val symbol = currentState.ownedCrypto.cryptoInfo.symbol
+                val detailResponse = try { repository.getCryptoData(symbol) } catch (e: Exception) { null }
+                val currentPrice = detailResponse?.symbols?.firstOrNull()?.last?.toDoubleOrNull() ?: 0.0
+                
+                val saleValue = currentState.quantityToSell * currentPrice
+
                 // Lógica de venda no banco
-                val asset = dao.getCryptoAssetsByUser(userId).first().find { it.cryptoId == currentState.ownedCrypto.cryptoInfo.id }
+                val assets = dao.getCryptoAssetsByUser(userId).first()
+                val asset = assets.find { it.cryptoId == currentState.ownedCrypto.cryptoInfo.id }
+                
                 if (asset != null) {
                     val newAmount = asset.amount - currentState.quantityToSell
                     if (newAmount > 0) {
                         dao.upsertCryptoAsset(asset.copy(amount = newAmount))
                     } else {
-                        // Idealmente um delete, mas upsert 0 funciona ou podemos implementar delete no DAO
+                        // Implementado como upsert 0, mas se tivermos delete no DAO seria melhor
                         dao.upsertCryptoAsset(asset.copy(amount = 0.0))
                     }
 
-                    // Adicionar transação de venda e atualizar saldo (simplificado aqui para focar na listagem)
-                    // ...
+                    // Atualizar Saldo do Usuário
+                    val user = dao.getUserById(userId)
+                    if (user != null) {
+                        dao.updateUser(user.copy(balance = user.balance + saleValue))
+                    }
+
+                    // Adicionar transação de venda
+                    dao.insertTransaction(
+                        Transaction(
+                            userId = userId,
+                            amount = saleValue,
+                            description = "Venda de ${currentState.quantityToSell.toInt()} $symbol",
+                            date = System.currentTimeMillis(),
+                            operation = "SELL"
+                        )
+                    )
                 }
             }
 
