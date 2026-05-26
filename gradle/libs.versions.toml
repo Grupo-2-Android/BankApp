@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.1"
+agp = "9.2.1"
 converterGson = "3.0.0"
 coreKtx = "1.18.0"
 datastorePreferences = "1.2.1"
@@ -18,7 +18,7 @@ retrofit = "3.0.0"
 roomCompiler = "2.8.4"
 roomKtx = "2.8.4"
 roomRuntime = "2.8.4"
-ksp = "2.1.0-1.0.29"
+ksp = "2.3.2"
 scancard = "1.1.0"
 
 [libraries]
