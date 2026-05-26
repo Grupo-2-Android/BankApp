@@ -13,6 +13,8 @@ import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.presentation.screens.cards.AddCardScreen
 import com.example.bankapp.presentation.screens.cards.CardManagementScreen
+import com.example.bankapp.presentation.screens.crypto.BuyCheckoutScreen
+import com.example.bankapp.presentation.screens.crypto.BuyQuantityScreen
 import com.example.bankapp.presentation.screens.crypto.CryptoDetailScreen
 import com.example.bankapp.presentation.screens.crypto.CryptoListScreen
 import com.example.bankapp.presentation.screens.DashboardScreen
@@ -21,6 +23,7 @@ import com.example.bankapp.presentation.screens.portfolio.MyCryptoDetailScreen
 import com.example.bankapp.presentation.screens.portfolio.MyCryptosListScreen
 import com.example.bankapp.presentation.screens.portfolio.SellCheckoutScreen
 import com.example.bankapp.presentation.screens.portfolio.SellQuantityScreen
+import com.example.bankapp.presentation.viewmodels.BuyEvent
 import com.example.bankapp.presentation.viewmodels.DashboardViewModel
 import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
@@ -37,7 +40,7 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
     val factory = remember { ViewModelFactory(userPreferences, database) }
 
     val cryptoViewModel: CryptoViewModel = viewModel(factory = factory)
-    val portfolioViewModel: MyPortfolioViewModel = viewModel()
+    val portfolioViewModel: MyPortfolioViewModel = viewModel(factory = factory)
     val cardManagementViewModel: CardManagementViewModel = viewModel(factory = factory)
 
     LaunchedEffect(Unit) {
@@ -62,6 +65,22 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
                     snackbarHostState.showSnackbar(
                         message = "Venda realizada com sucesso!"
                     )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        cryptoViewModel.buyEvents.collect { event ->
+            when (event) {
+                is BuyEvent.Success -> {
+                    navController.navigate("dashboard") {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                    snackbarHostState.showSnackbar("Compra realizada com sucesso!")
+                }
+                is BuyEvent.Error -> {
+                    snackbarHostState.showSnackbar(event.message)
                 }
             }
         }
@@ -101,6 +120,22 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
             val cryptoId = backStackEntry.arguments?.getString("cryptoId") ?: ""
             CryptoDetailScreen(
                 cryptoId = cryptoId,
+                viewModel = cryptoViewModel,
+                onBack = { navController.popBackStack() },
+                onNavigateToBuy = { navController.navigate("buy_quantity") }
+            )
+        }
+
+        // Fluxo de Compra
+        composable("buy_quantity") {
+            BuyQuantityScreen(
+                viewModel = cryptoViewModel,
+                onBack = { navController.popBackStack() },
+                onNavigateToCheckout = { navController.navigate("buy_checkout") }
+            )
+        }
+        composable("buy_checkout") {
+            BuyCheckoutScreen(
                 viewModel = cryptoViewModel,
                 onBack = { navController.popBackStack() }
             )
