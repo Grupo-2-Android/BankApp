@@ -99,10 +99,12 @@ class CryptoViewModel(
 
     private fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
         viewModelScope.launch {
+            // Garante que pegamos o ID do usuário que está logado AGORA
             val userId = userPreferences.userId.first() ?: return@launch
             val totalCost = amount * price
 
             val dao = database.bankDao()
+            // Busca o usuário específico no banco para validar saldo
             val user = dao.getUserById(userId) ?: return@launch
 
             if (user.balance >= totalCost) {
@@ -115,7 +117,7 @@ class CryptoViewModel(
                     Transaction(
                         userId = userId,
                         amount = totalCost,
-                        description = "Compra de $amount $symbol",
+                        description = "Compra de ${amount.toInt()} $symbol",
                         date = System.currentTimeMillis(),
                         operation = "BUY"
                     )

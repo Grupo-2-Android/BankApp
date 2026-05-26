@@ -67,7 +67,7 @@ fun BuyCheckoutScreen(
                     SummaryRow(label = "Ativo", value = state.crypto.symbol)
                     HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(vertical = 12.dp))
 
-                    SummaryRow(label = "Quantidade a Comprar", value = String.format(Locale.US, "%.6f", state.amount))
+                    SummaryRow(label = "Quantidade a Comprar", value = state.amount.toInt().toString())
                     HorizontalDivider(color = Color.DarkGray, modifier = Modifier.padding(vertical = 12.dp))
 
                     SummaryRow(label = "Cotação Atual", value = "R$ ${String.format(Locale.GERMANY, "%,.2f", state.price)}")

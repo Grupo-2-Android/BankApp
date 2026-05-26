@@ -49,7 +49,7 @@ fun MyCryptoItemRow(owned: OwnedCrypto, onClick: () -> Unit) {
     ) {
         Column {
             Text(owned.cryptoInfo.symbol, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text("Qtde: ${String.format(Locale.US, "%.3f", owned.quantity)}", color = Color.Gray, fontSize = 14.sp)
+            Text("Qtde: ${owned.quantity.toInt()}", color = Color.Gray, fontSize = 14.sp)
         }
         val totalValueBRL = owned.quantity * owned.currentPrice
         Text("R$ ${String.format(Locale.GERMANY, "%,.2f", totalValueBRL)}", color = Color.White, fontWeight = FontWeight.Medium)
