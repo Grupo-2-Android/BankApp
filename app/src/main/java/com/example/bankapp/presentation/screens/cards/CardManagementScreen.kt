@@ -227,8 +227,9 @@ fun CardManagementScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = VirtualCardColor,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        contentColor = Color.White
+                    ),
+                    shape = roundedButtonShape
                 ) {
                     Text(stringResource(R.string.common_virtual))
                 }
@@ -244,8 +245,9 @@ fun CardManagementScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PhysicalCardColor,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        contentColor = Color.White
+                    ),
+                    shape = roundedButtonShape
                 ) {
                     Text(stringResource(R.string.common_physical))
                 }

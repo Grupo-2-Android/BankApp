@@ -69,15 +69,9 @@ fun CryptoDetailScreen(
                     }
                 }
             )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+        },
+        bottomBar = {
+            if (detailState is CryptoDetailUiState.Success) {
                 Button(
                     onClick = {
                         val state = detailState
@@ -86,6 +80,9 @@ fun CryptoDetailScreen(
                             onNavigateToBuy()
                         }
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     shape = roundedButtonShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
@@ -95,8 +92,14 @@ fun CryptoDetailScreen(
                     Text(stringResource(R.string.crypto_buy))
                 }
             }
-
-            Spacer(modifier = Modifier.size(width = 0.dp, height = 24.dp))
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
 
             if (crypto == null) {
                 Text(

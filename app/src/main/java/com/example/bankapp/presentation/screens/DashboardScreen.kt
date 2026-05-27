@@ -102,7 +102,10 @@ fun DashboardScreen(
 
                 NavigationDrawerItem(
                     label = {
-                        Text(stringResource(R.string.common_cryptos), color = MaterialTheme.colorScheme.onSurface)
+                        Text(
+                            stringResource(R.string.common_cryptos),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     onClick = {
@@ -121,7 +124,10 @@ fun DashboardScreen(
 
                 NavigationDrawerItem(
                     label = {
-                        Text(stringResource(R.string.common_my_cryptos), color = MaterialTheme.colorScheme.onSurface)
+                        Text(
+                            stringResource(R.string.common_my_cryptos),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     onClick = {
@@ -132,15 +138,15 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Cartões", color = Color.White)
+                        Text(stringResource(R.string.dashboard_cards), color = MaterialTheme.colorScheme.onSurface)
                     },
                     selected = false,
                     onClick = {
@@ -151,15 +157,15 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Meu Extrato", color = Color.White)
+                        Text(stringResource(R.string.transaction_history_title), color = MaterialTheme.colorScheme.onSurface)
                     },
                     selected = false,
                     onClick = {
@@ -184,7 +190,10 @@ fun DashboardScreen(
 
                 NavigationDrawerItem(
                     label = {
-                        Text(stringResource(R.string.dashboard_logout), color = MaterialTheme.colorScheme.onSurface)
+                        Text(
+                            stringResource(R.string.dashboard_logout),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     icon = {
@@ -255,11 +264,14 @@ fun DashboardScreen(
             ) {
                 if (userAccount == null) {
                     CircularProgressIndicator(
-                        color = Color(0xFF4CAF50)
+                        color = GreenPrimary
                     )
                 } else {
                     Text(
-                        text = stringResource(R.string.dashboard_greeting_with_name_exclamation, account.name),
+                        text = stringResource(
+                            R.string.dashboard_greeting_with_name_exclamation,
+                            userAccount!!.name
+                        ),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.SemiBold,
@@ -345,19 +357,17 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("transaction_history") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
-                        contentColor = Color.White
+                        containerColor = GreenPrimary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Meu Extrato",
+                        text = stringResource(R.string.transaction_history_title),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                     )
                 }
 

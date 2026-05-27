@@ -4,11 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -50,7 +51,6 @@ fun TransactionHistoryScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Meu Extrato", color = Color.White) },
                 title = {
                     Text(
                         text = stringResource(R.string.transaction_history_title),
@@ -76,7 +76,6 @@ fun TransactionHistoryScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Nenhuma movimentação encontrada", color = Color.Gray)
                 Text(stringResource(R.string.transaction_history_empty))
             }
         } else {
@@ -87,8 +86,8 @@ fun TransactionHistoryScreen(
             ) {
                 items(transactions) { transaction ->
                     TransactionItem(transaction)
-                    HorizontalDivider(color = Color.DarkGray, thickness = 0.5.dp)
-                    // TODO:  HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+//                    HorizontalDivider(color = Color.DarkGray, thickness = 0.5.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 0.5.dp)
                 }
             }
         }
@@ -98,11 +97,9 @@ fun TransactionHistoryScreen(
 @Composable
 fun TransactionItem(transaction: Transaction) {
     val isNegative = transaction.operation == "BUY"
-    val color = if (isNegative) Color.Red else Color(0xFF4CAF50)
+    val color = if (isNegative) MaterialTheme.colorScheme.error else GreenPrimary
     val prefix = if (isNegative) "-" else "+"
-
     val datePattern = stringResource(R.string.transaction_history_date_pattern)
-    val formattedAmount = String.format(Locale.US, "%.2f", transaction.amount)
 
     Row(
         modifier = Modifier
@@ -127,11 +124,10 @@ fun TransactionItem(transaction: Transaction) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (transaction.operation == "BUY") "COMPRA" else "VENDA"
-                    text = stringResource(R.string.transaction_history_type, transaction.operation),
+                    text = if (transaction.operation == "BUY") stringResource(R.string.transaction_history_type_buy)
+                    else stringResource(R.string.transaction_history_type_sell),
                     fontSize = 12.sp,
                     color = color
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -140,7 +136,6 @@ fun TransactionItem(transaction: Transaction) {
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             color = color
-            color = if (transaction.operation == "BUY") MaterialTheme.colorScheme.error else GreenPrimary
         )
     }
 }

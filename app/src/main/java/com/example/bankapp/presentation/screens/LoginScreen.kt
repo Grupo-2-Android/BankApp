@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -17,22 +18,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -91,9 +76,7 @@ fun LoginScreen(
     }
 
     fun sanitize(input: String): String {
-
         val emojiRegex = Regex("[\\p{So}\\p{Cn}\\p{Cs}]")
-
         return input
             .replace("\n", "")
             .replace(emojiRegex, "")
@@ -102,16 +85,9 @@ fun LoginScreen(
     fun validateUsername(value: String): String? {
 
         return when {
-
-            value.isBlank() ->
-                "Usuário não pode ser vazio"
-
-            value.trim() != value ->
-                "Não use espaços no início ou fim"
-
-            value.contains("  ") ->
-                "Não use espaços duplos"
-
+            value.isBlank() -> "Usuário não pode ser vazio"
+            value.trim() != value -> "Não use espaços no início ou fim"
+            value.contains("  ") -> "Não use espaços duplos"
             else -> null
         }
     }
@@ -119,9 +95,7 @@ fun LoginScreen(
     fun validatePassword(value: String): String? {
 
         return when {
-
-            value.length < 6 ->
-                "Senha deve ter no mínimo 6 caracteres"
+            value.length < 6 -> "Senha deve ter no mínimo 6 caracteres"
 
             else -> null
         }
@@ -133,16 +107,17 @@ fun LoginScreen(
                 onLoginSuccess()
                 viewModel.resetState()
             }
+
             is LoginStatus.Error -> {
                 snackbarHostState.showSnackbar(state.message)
                 viewModel.resetState()
             }
+
             else -> {}
         }
     }
 
     LaunchedEffect(logoutMessage) {
-
         logoutMessage?.let {
             snackbarHostState.showSnackbar(it)
         }
@@ -152,72 +127,74 @@ fun LoginScreen(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
-
-        containerColor = Color.Black
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            color = MaterialTheme.colorScheme.background
         ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp
-            )
-
-            Text(
-                text = stringResource(R.string.login_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 40.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                shape = RoundedCornerShape(16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 40.sp
+                )
+
+                Text(
+                    text = stringResource(R.string.login_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 40.dp)
+                )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = {
-                            username = it
-                            if (loginState is LoginStatus.Error) viewModel.resetState()
-                        },
-                        label = {
-                            Text(
-                                stringResource(R.string.login_username),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = {
+                                val cleaned = sanitize(it)
+                                username = cleaned
+                                usernameError = validateUsername(cleaned)
+                            },
+                            label = {
+                                Text(
+                                    stringResource(R.string.login_username),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = usernameError != null,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedBorderColor = GreenPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = loginState is LoginStatus.Error,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedBorderColor = GreenPrimary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
 
                         if (usernameError != null) {
                             Text(
                                 text = usernameError!!,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
@@ -225,126 +202,79 @@ fun LoginScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = {
-                            password = it
-                            if (loginState is LoginStatus.Error) viewModel.resetState()
-                        },
-                        label = {
-                            Text(
-                                stringResource(R.string.login_password),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = {
+                                val cleaned = sanitize(it)
+                                password = cleaned
+                                passwordError = validatePassword(cleaned)
+                            },
+                            label = {
+                                Text(
+                                    stringResource(R.string.login_password),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            visualTransformation = PasswordVisualTransformation(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            modifier = Modifier.fillMaxWidth(),
+                            isError = passwordError != null,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedBorderColor = GreenPrimary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                errorBorderColor = MaterialTheme.colorScheme.error
                             )
-                        },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = loginState is LoginStatus.Error,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedBorderColor = GreenPrimary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
-                    )
 
-                    if (loginState is LoginStatus.Error) {
-                        Text(
-                            text = (loginState as LoginStatus.Error).message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
                         if (passwordError != null) {
-
                             Text(
                                 text = passwordError!!,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
                         }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
                         Button(
                             onClick = {
-
-                                usernameError =
-                                    validateUsername(username)
-
-                                passwordError =
-                                    validatePassword(password)
+                                usernameError = validateUsername(username)
+                                passwordError = validatePassword(password)
 
                                 if (
                                     usernameError == null &&
                                     passwordError == null
                                 ) {
-
-                                    viewModel.login(
-                                        username,
-                                        password
-                                    )
+                                    viewModel.login(username, password)
                                 }
                             },
-
                             modifier = Modifier.fillMaxWidth(),
-
-                            enabled =
-                                loginState !is LoginStatus.Loading,
-
+                            enabled = loginState !is LoginStatus.Loading,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4CAF50),
-                                contentColor = Color.White
+                                containerColor = GreenPrimary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
                             ),
-
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-
                             if (loginState is LoginStatus.Loading) {
-
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     strokeWidth = 2.dp
                                 )
-
                             } else {
-
                                 Text(
                                     text = "Entrar",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
                             }
-                    Button(
-                        onClick = {
-                            viewModel.login(username, password)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = loginState !is LoginStatus.Loading,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = GreenPrimary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        if (loginState is LoginStatus.Loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.login_enter),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
                         }
                     }
                 }

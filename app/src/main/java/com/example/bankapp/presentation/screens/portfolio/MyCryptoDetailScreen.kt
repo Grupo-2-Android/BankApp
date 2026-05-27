@@ -1,6 +1,5 @@
 package com.example.bankapp.presentation.screens.portfolio
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +57,21 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
                     }
                 }
             )
+        },
+        bottomBar = {
+            Button(
+                onClick = onNavigateToSellQuantity,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = roundedButtonShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = GreenPrimary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(stringResource(R.string.sell_action))
+            }
         }
     ) { padding ->
         Column(
@@ -67,19 +80,6 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Button(
-                    onClick = onNavigateToSellQuantity,
-                    shape = roundedButtonShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(stringResource(R.string.sell_action))
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 stringResource(R.string.portfolio_position, owned.cryptoInfo.symbol),
                 style = MaterialTheme.typography.headlineMedium,
