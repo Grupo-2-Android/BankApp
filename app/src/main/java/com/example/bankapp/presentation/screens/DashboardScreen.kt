@@ -40,10 +40,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.bankapp.R
+import com.example.bankapp.presentation.theme.GreenPrimary
 import com.example.bankapp.presentation.viewmodels.DashboardViewModel
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -71,32 +74,38 @@ fun DashboardScreen(
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxHeight(),
-                drawerContainerColor = Color(0xFF1E1E1E)
+                drawerContainerColor = MaterialTheme.colorScheme.surface
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Olá, ${userAccount?.name ?: "Usuário"}",
-                    color = Color.White,
+                    text = stringResource(
+                        R.string.dashboard_greeting_with_name,
+                        userAccount?.name ?: stringResource(R.string.dashboard_default_user)
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     modifier = Modifier.padding(16.dp),
                     fontWeight = FontWeight.SemiBold
                 )
 
                 Text(
-                    text = "Menu",
+                    text = stringResource(R.string.common_menu),
                     modifier = Modifier.padding(horizontal = 16.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4CAF50)
+                    color = GreenPrimary
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                HorizontalDivider(color = Color.Gray)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Cryptos", color = Color.White)
+                        Text(
+                            stringResource(R.string.common_cryptos),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     onClick = {
@@ -107,15 +116,18 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Minhas Cryptos", color = Color.White)
+                        Text(
+                            stringResource(R.string.common_my_cryptos),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     onClick = {
@@ -126,15 +138,15 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Cartões", color = Color.White)
+                        Text(stringResource(R.string.dashboard_cards), color = MaterialTheme.colorScheme.onSurface)
                     },
                     selected = false,
                     onClick = {
@@ -145,15 +157,15 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Meu Extrato", color = Color.White)
+                        Text(stringResource(R.string.transaction_history_title), color = MaterialTheme.colorScheme.onSurface)
                     },
                     selected = false,
                     onClick = {
@@ -164,28 +176,31 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                HorizontalDivider(color = Color.Gray)
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 NavigationDrawerItem(
                     label = {
-                        Text("Sair", color = Color.White)
+                        Text(
+                            stringResource(R.string.dashboard_logout),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     selected = false,
                     icon = {
                         Icon(
                             Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = "Logout",
-                            tint = Color(0xFF4CAF50)
+                            contentDescription = stringResource(R.string.dashboard_logout_content_description),
+                            tint = GreenPrimary
                         )
                     },
                     onClick = {
@@ -196,27 +211,22 @@ fun DashboardScreen(
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedContainerColor = Color.Transparent,
-                        selectedContainerColor = Color(0xFF4CAF50),
-                        unselectedTextColor = Color.White,
-                        selectedTextColor = Color.White
+                        selectedContainerColor = GreenPrimary,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
             }
         }
     ) {
         Scaffold(
-            containerColor = Color.Black,
+            containerColor = MaterialTheme.colorScheme.background,
             snackbarHost = {
                 SnackbarHost(snackbarHostState)
             },
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text(
-                            text = "Dashboard",
-                            color = Color.White
-                        )
-                    },
+                    title = {},
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -227,14 +237,14 @@ fun DashboardScreen(
                         ) {
                             Icon(
                                 Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
+                                contentDescription = stringResource(R.string.common_menu),
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Black,
-                        titleContentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -249,55 +259,55 @@ fun DashboardScreen(
             ) {
                 if (userAccount == null) {
                     CircularProgressIndicator(
-                        color = Color(0xFF4CAF50)
+                        color = GreenPrimary
                     )
                 } else {
                     Text(
-                        text = "Olá, ${userAccount!!.name}!",
+                        text = stringResource(
+                            R.string.dashboard_greeting_with_name_exclamation,
+                            userAccount!!.name
+                        ),
                         style = MaterialTheme.typography.headlineMedium,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
+                    val formattedBalance = String.format(
+                        Locale("pt", "BR"),
+                        "%,.2f",
+                        userAccount!!.balance
+                    )
                     Text(
-                        text = "Saldo: R$ ${
-                            String.format(
-                                Locale("pt", "BR"),
-                                "%,.2f",
-                                userAccount!!.balance
-                            )
-                        }",
+                        text = stringResource(R.string.dashboard_balance, formattedBalance),
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF4CAF50),
+                        color = GreenPrimary,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 32.dp)
                     )
                 }
 
                 Text(
-                    text = "Dashboard",
+                    text = stringResource(R.string.common_dashboard),
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
                 Button(
                     onClick = { navController.navigate("crypto_list") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = GreenPrimary,
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
+
                 ) {
                     Text(
-                        text = "Cryptos",
+                        text = stringResource(R.string.common_cryptos),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                     )
                 }
 
@@ -305,19 +315,17 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("my_cryptos") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = GreenPrimary,
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Minhas Cryptos",
+                        text = stringResource(R.string.common_my_cryptos),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                     )
                 }
 
@@ -325,19 +333,17 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("cards") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = GreenPrimary,
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Cartões",
+                        text = stringResource(R.string.dashboard_cards),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                     )
                 }
 
@@ -345,19 +351,17 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("transaction_history") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = GreenPrimary,
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Meu Extrato",
+                        text = stringResource(R.string.transaction_history_title),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 16.sp
                     )
                 }
 

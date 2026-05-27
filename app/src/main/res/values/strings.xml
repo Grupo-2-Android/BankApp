@@ -1,3 +1,133 @@
 <resources>
     <string name="app_name">BankApp</string>
+
+    <!-- Common -->
+    <string name="common_back">Voltar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_menu">Menu</string>
+    <string name="common_dashboard">Dashboard</string>
+    <string name="common_cryptos">Cryptos</string>
+    <string name="common_my_cryptos">Minhas Cryptos</string>
+    <string name="common_virtual">Virtual</string>
+    <string name="common_physical">Físico</string>
+    <string name="common_currency_prefix">R$ %1$s</string>
+
+    <!-- Add Card -->
+    <string name="add_card_title">Adicionar cartão %1$s</string>
+    <string name="add_card_data_title">Dados do cartão</string>
+    <string name="add_card_label_number">Número</string>
+    <string name="add_card_label_cvv">CVV</string>
+    <string name="add_card_label_expiration">Validade</string>
+    <string name="add_card_label_brand">Bandeira</string>
+    <string name="add_card_scan">Escanear cartão</string>
+    <string name="add_card_scan_again">Escanear novamente</string>
+    <string name="add_card_placeholder_number">****************</string>
+    <string name="add_card_placeholder_expiration">--/--</string>
+    <string name="add_card_placeholder_cvv">***</string>
+    <string name="add_card_placeholder_brand">CARD</string>
+
+    <!-- Card Management -->
+    <string name="cards_title">Meus Cartões</string>
+    <string name="cards_add">Adicionar</string>
+    <string name="cards_delete">Excluir</string>
+    <string name="cards_empty">Você ainda não possui cartões.</string>
+    <string name="cards_choose_type">Escolha o tipo de cartão</string>
+    <string name="cards_choose_to_delete">Escolha o cartão para excluir</string>
+    <string name="cards_ending">final %1$s</string>
+    <string name="cards_delete_confirm_title">Confirmar exclusão</string>
+    <string name="cards_delete_confirm_message">Tem certeza que deseja excluir o cartão final %1$s?</string>
+
+    <!-- Card Management ViewModel -->
+    <string name="cards_vm_error_generate_virtual">Erro ao gerar cartão virtual. Tente novamente.</string>
+    <string name="cards_vm_error_generate_failed">Houve uma falha ao gerar cartão.</string>
+    <string name="cards_vm_error_limit_reached">Limite de 2 cartões atingido.</string>
+    <string name="cards_vm_error_type_already_exists">Você já possui um cartão do tipo %1$s.</string>
+    <string name="cards_vm_error_virtual_exists">Você já possui um cartão virtual.</string>
+    <string name="cards_vm_error_physical_exists">Você já possui um cartão físico.</string>
+    <string name="cards_vm_error_invalid_type">Tipo de cartão inválido.</string>
+    <string name="cards_vm_error_delete_failed">Erro ao deletar cartão. Tente novamente.</string>
+    <string name="cards_vm_placeholder_expiration">MM/AA</string>
+    <string name="cards_vm_placeholder_brand">BANDEIRA</string>
+
+    <!-- Crypto -->
+    <string name="crypto_buy">Comprar</string>
+    <string name="crypto_not_found">Cripto não encontrada na lista local</string>
+    <string name="crypto_details_title">Detalhes: %1$s</string>
+    <string name="crypto_label_symbol">Símbolo</string>
+    <string name="crypto_label_last_price">Último Preço</string>
+    <string name="crypto_label_last_btc">Último em BTC</string>
+    <string name="crypto_label_low_24h">Mínima (24h)</string>
+    <string name="crypto_label_high_24h">Máxima (24h)</string>
+    <string name="crypto_label_date_time">Data/Hora</string>
+    <string name="crypto_try_again">Tentar novamente</string>
+    <string name="crypto_id_label">ID: %1$s</string>
+    <string name="crypto_list_arrow">&gt;</string>
+    <string name="buy_quantity_title">Compra</string>
+    <string name="buy_summary_title">Resumo da Compra</string>
+    <string name="buy_asset">Ativo</string>
+    <string name="buy_quantity_to_buy">Quantidade a Comprar</string>
+    <string name="buy_current_quote">Cotação Atual</string>
+    <string name="buy_total_to_pay">Total a Pagar</string>
+    <string name="buy_confirm">Confirmar Compra</string>
+    <string name="buy_how_much">Quanto deseja comprar de %1$s?</string>
+    <string name="buy_quantity_label">Quantidade</string>
+    <string name="buy_invalid_quantity">Digite uma quantidade válida</string>
+    <string name="buy_continue_to_summary">Continuar para Resumo</string>
+
+    <!-- Crypto ViewModel -->
+    <string name="crypto_vm_error_load_list">Erro ao carregar cryptos</string>
+    <string name="crypto_vm_error_detail_not_found">Detalhes não encontrados</string>
+    <string name="crypto_vm_error_load_detail">Erro ao carregar detalhes</string>
+    <string name="crypto_vm_buy_description">Compra de %1$s %2$s</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting_with_name">Olá, %1$s</string>
+    <string name="dashboard_greeting_with_name_exclamation">Olá, %1$s!</string>
+    <string name="dashboard_default_user">Usuário</string>
+    <string name="dashboard_balance">Saldo: R$ %1$s</string>
+    <string name="dashboard_cards">Cartões</string>
+    <string name="dashboard_logout">Sair</string>
+    <string name="dashboard_logout_content_description">Logout</string>
+
+    <!-- Sell / Portfolio -->
+    <string name="sell_summary_title">Resumo da Venda</string>
+    <string name="sell_asset">Ativo</string>
+    <string name="sell_quantity_to_sell">Quantidade a Vender</string>
+    <string name="sell_current_quote">Cotação Atual</string>
+    <string name="sell_you_will_receive">Você receberá</string>
+    <string name="sell_confirm">Confirmar Venda</string>
+    <string name="sell_action">Vender</string>
+    <string name="sell_how_much">Quanto deseja vender de %1$s?</string>
+    <string name="sell_available">Disponível: %1$s</string>
+    <string name="sell_quantity">Quantidade</string>
+    <string name="sell_invalid_quantity">Digite uma quantidade válida</string>
+    <string name="sell_insufficient_balance">Saldo insuficiente</string>
+    <string name="sell_continue_to_summary">Continuar para Resumo</string>
+
+    <string name="portfolio_position">Sua posição: %1$s</string>
+    <string name="portfolio_wallet_quantity">Quantidade em Carteira</string>
+    <string name="portfolio_estimated_value_brl">Valor Atual Estimado (BRL)</string>
+    <string name="portfolio_quantity_short">Qtde: %1$s</string>
+    <string name="portfolio_empty">Você ainda não possui criptos na carteira</string>
+
+    <!-- Login -->
+    <string name="login_subtitle">Seu banco digital seguro</string>
+    <string name="login_username">Usuário</string>
+    <string name="login_password">Senha</string>
+    <string name="login_enter">Entrar</string>
+
+    <!-- Login ViewModel -->
+    <string name="login_vm_success_message">Login realizado com sucesso</string>
+    <string name="login_vm_error_generic">Ocorreu um erro</string>
+
+     <!-- Transaction History -->
+    <string name="transaction_history_title">Meu extrato</string>
+    <string name="transaction_history_empty">Nenhuma movimentação encontrada</string>
+    <string name="transaction_history_type">Tipo: %1$s</string>
+    <string name="transaction_history_type_buy">COMPRA</string>
+    <string name="transaction_history_type_sell">VENDA</string>
+    <string name="transaction_history_amount_buy">-R$ %1$s</string>
+    <string name="transaction_history_amount_default">+R$ %1$s</string>
+    <string name="transaction_history_date_pattern">dd MMM yyyy, HH:mm</string>
 </resources>

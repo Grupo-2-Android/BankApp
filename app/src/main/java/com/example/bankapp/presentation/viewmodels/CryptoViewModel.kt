@@ -1,7 +1,9 @@
 package com.example.bankapp.presentation.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bankapp.R
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.data.local.room.entities.CryptoAsset
@@ -17,10 +19,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class CryptoViewModel(
+    application: Application,
     private val repository: ApiRepository = ApiRepository(),
     private val userPreferences: UserPreferences,
     private val database: AppDatabase
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    private val ctx get() = getApplication<Application>()
 
     private val _uiState = MutableStateFlow<CryptoUiState>(CryptoUiState.Loading)
     val uiState: StateFlow<CryptoUiState> = _uiState
@@ -48,7 +53,7 @@ class CryptoViewModel(
                 _allCryptos = response.result
                 _uiState.value = CryptoUiState.Success(_allCryptos)
             } catch (e: Exception) {
-                _uiState.value = CryptoUiState.Error(e.message ?: "Erro ao carregar cryptos")
+                _uiState.value = CryptoUiState.Error(e.message ?: ctx.getString(R.string.crypto_vm_error_load_list))
             }
         }
     }
@@ -62,15 +67,15 @@ class CryptoViewModel(
                 if (detail != null) {
                     _detailState.value = CryptoDetailUiState.Success(detail)
                 } else {
-                    _detailState.value = CryptoDetailUiState.Error("Detalhes não encontrados")
+                    _detailState.value = CryptoDetailUiState.Error(ctx.getString(R.string.crypto_vm_error_detail_not_found))
                 }
             } catch (e: Exception) {
-                _detailState.value = CryptoDetailUiState.Error(e.message ?: "Erro ao carregar detalhes")
+                _detailState.value = CryptoDetailUiState.Error(e.message ?: ctx.getString(R.string.crypto_vm_error_load_detail))
             }
         }
     }
 
-    fun getCryptoById(id: String): com.example.bankapp.data.models.CryptoItem? {
+    fun getCryptoById(id: String): CryptoItem? {
         return _allCryptos.find { it.id == id }
     }
 
@@ -99,12 +104,10 @@ class CryptoViewModel(
 
     private fun buyCrypto(cryptoId: String, symbol: String, amount: Double, price: Double) {
         viewModelScope.launch {
-            // Garante que pegamos o ID do usuário que está logado AGORA
             val userId = userPreferences.userId.first() ?: return@launch
             val totalCost = amount * price
 
             val dao = database.bankDao()
-            // Busca o usuário específico no banco para validar saldo
             val user = dao.getUserById(userId) ?: return@launch
 
             if (user.balance >= totalCost) {
@@ -117,7 +120,7 @@ class CryptoViewModel(
                     Transaction(
                         userId = userId,
                         amount = totalCost,
-                        description = "Compra de ${amount.toInt()} $symbol",
+                        description = ctx.getString(R.string.crypto_vm_buy_description, amount.toString(), symbol),
                         date = System.currentTimeMillis(),
                         operation = "BUY"
                     )
@@ -153,7 +156,7 @@ class CryptoViewModel(
 
 sealed class CryptoUiState {
     object Loading : CryptoUiState()
-    data class Success(val cryptos: List<com.example.bankapp.data.models.CryptoItem>) : CryptoUiState()
+    data class Success(val cryptos: List<CryptoItem>) : CryptoUiState()
     data class Error(val message: String) : CryptoUiState()
 }
 

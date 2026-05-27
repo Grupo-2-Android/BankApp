@@ -22,9 +22,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val snackbarHostState = remember { SnackbarHostState() }
 
             BankAppTheme {
+                val snackbarHostState = remember { SnackbarHostState() }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }

@@ -1,7 +1,9 @@
 package com.example.bankapp.presentation.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bankapp.R
 import com.example.bankapp.data.local.datastore.UserPreferences
 import com.example.bankapp.data.local.room.AppDatabase
 import com.example.bankapp.data.local.room.entities.UserAccount
@@ -12,18 +14,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    application: Application,
     private val repository: ApiRepository = ApiRepository(),
     private val userPreferences: UserPreferences,
     private val database: AppDatabase
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    private val ctx get() = getApplication<Application>()
 
     private val _loginState = MutableStateFlow<LoginStatus>(LoginStatus.Idle)
     val loginState: StateFlow<LoginStatus> = _loginState
 
     fun login(username: String, password: String) {
-
         viewModelScope.launch {
-
             _loginState.value = LoginStatus.Loading
 
             try {
@@ -34,9 +37,7 @@ class LoginViewModel(
                 )
 
                 val response = repository.fetchLogin(request)
-
-                if (response.message == "Login realizado com sucesso") {
-
+                if (response.message == ctx.getString(R.string.login_vm_success_message)) {
                     val userId = response.id ?: ""
                     val name = response.name ?: ""
 
@@ -70,8 +71,7 @@ class LoginViewModel(
                 }
                 _loginState.value = LoginStatus.Error(message)
             } catch (e: Exception) {
-                _loginState.value =
-                    LoginStatus.Error(e.message ?: "Ocorreu um erro")
+                _loginState.value = LoginStatus.Error(e.message ?: ctx.getString(R.string.login_vm_error_generic))
             }
         }
     }
@@ -81,14 +81,9 @@ class LoginViewModel(
     }
 }
 
-
 sealed class LoginStatus {
-
     object Idle : LoginStatus()
-
     object Loading : LoginStatus()
-
     object Success : LoginStatus()
-
     data class Error(val message: String) : LoginStatus()
 }

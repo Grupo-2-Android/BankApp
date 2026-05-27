@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,15 +50,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.bankapp.R
 import com.example.bankapp.presentation.theme.GreenPrimary
 import com.example.bankapp.presentation.theme.PhysicalCardColor
 import com.example.bankapp.presentation.theme.RedDelete
 import com.example.bankapp.presentation.theme.VirtualCardColor
 import com.example.bankapp.presentation.utils.components.CardItem
-import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
+import com.example.bankapp.presentation.viewmodels.CardManagementViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,10 +119,13 @@ fun CardManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Meus Cartões") },
+                title = { Text(stringResource(R.string.cards_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.common_back)
+                        )
                     }
                 }
             )
@@ -127,35 +135,39 @@ fun CardManagementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (cards.size < 2) {
                     Button(
                         onClick = { showAddCardBottomSheet = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = GreenPrimary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            contentColor = Color.White
                         )
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Adicionar")
+                        Text(
+                            text = stringResource(R.string.cards_add),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
 
                 if (cards.isNotEmpty()) {
                     OutlinedButton(
                         onClick = { showDeleteCardBottomSheet = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = RedDelete),
                         border = BorderStroke(1.dp, RedDelete)
                     ) {
                         Icon(Icons.Default.Delete, contentDescription = null, tint = RedDelete)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Excluir", color = RedDelete)
+                        Text(stringResource(R.string.cards_delete), color = RedDelete)
                     }
                 }
             }
@@ -171,7 +183,7 @@ fun CardManagementScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Você ainda não possui cartões.")
+                    Text(stringResource(R.string.cards_empty))
                 }
             } else {
                 LazyColumn(
@@ -205,7 +217,7 @@ fun CardManagementScreen(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Escolha o tipo de cartão",
+                    text = stringResource(R.string.cards_choose_type),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -219,13 +231,18 @@ fun CardManagementScreen(
                             navigateToAddCardWithPermission(CardManagementViewModel.TYPE_VIRTUAL)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = VirtualCardColor,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        contentColor = Color.White
+                    ),
+                    shape = roundedButtonShape
                 ) {
-                    Text("Virtual")
+                    Text(
+                        text = stringResource(R.string.common_virtual),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
 
                 Button(
@@ -236,13 +253,18 @@ fun CardManagementScreen(
                             navigateToAddCardWithPermission(CardManagementViewModel.TYPE_PHYSICAL)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PhysicalCardColor,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        contentColor = Color.White
+                    ),
+                    shape = roundedButtonShape
                 ) {
-                    Text("Físico")
+                    Text(
+                        text = stringResource(R.string.common_physical),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -266,7 +288,7 @@ fun CardManagementScreen(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Escolha o cartão para excluir",
+                    text = stringResource(R.string.cards_choose_to_delete),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
@@ -283,7 +305,7 @@ fun CardManagementScreen(
                         onClick = {
                             pendingDeleteCard = card
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = backgroundColor,
@@ -295,9 +317,15 @@ fun CardManagementScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "final ${card.number.takeLast(4)}")
+                            Text(text = stringResource(R.string.cards_ending, card.number.takeLast(4)))
                             Text(
-                                text = if (card.type == CardManagementViewModel.TYPE_PHYSICAL) "Físico" else "Virtual",
+                                text = stringResource(
+                                    if (card.type == CardManagementViewModel.TYPE_PHYSICAL) {
+                                        R.string.common_physical
+                                    } else {
+                                        R.string.common_virtual
+                                    }
+                                ),
                                 color = Color.White.copy(alpha = 0.7f)
                             )
                         }
@@ -314,15 +342,14 @@ fun CardManagementScreen(
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             title = {
-                Text("Confirmar exclusão")
+                Text(stringResource(R.string.cards_delete_confirm_title))
             },
             text = {
                 Text(
-                    text = "Tem certeza que deseja excluir o cartão final ${
-                        pendingDeleteCard?.number?.takeLast(
-                            4
-                        )
-                    }?"
+                    text = stringResource(
+                        R.string.cards_delete_confirm_message,
+                        pendingDeleteCard?.number?.takeLast(4).orEmpty()
+                    )
                 )
             },
             confirmButton = {
@@ -333,12 +360,12 @@ fun CardManagementScreen(
                         showDeleteCardBottomSheet = false
                     }
                 ) {
-                    Text("Excluir", color = RedDelete)
+                    Text(stringResource(R.string.cards_delete), color = RedDelete)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { pendingDeleteCard = null }) {
-                    Text("Cancelar")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )

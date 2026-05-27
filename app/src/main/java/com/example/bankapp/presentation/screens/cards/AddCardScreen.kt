@@ -48,7 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.br.scan_card.CreditCardData
 import com.br.scan_card.ScanCardActivity
 import com.example.bankapp.R
@@ -57,8 +60,8 @@ import com.example.bankapp.presentation.theme.GreenPrimary
 import com.example.bankapp.presentation.theme.GreenSecondary
 import com.example.bankapp.presentation.utils.components.CardItem
 import com.example.bankapp.presentation.utils.formatCardNumber
-import com.example.bankapp.presentation.viewmodels.cards.AddCardUiState
-import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
+import com.example.bankapp.presentation.viewmodels.AddCardUiState
+import com.example.bankapp.presentation.viewmodels.CardManagementViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,13 +100,15 @@ fun AddCardScreen(
     val displayCard = previewCard ?: Card(
         userId = "",
         type = cardType,
-        number = "****************",
-        expiration = "--/--",
-        cvv = "***",
-        brand = "CARD"
+        number = stringResource(R.string.add_card_placeholder_number),
+        expiration = stringResource(R.string.add_card_placeholder_expiration),
+        cvv = stringResource(R.string.add_card_placeholder_cvv),
+        brand = stringResource(R.string.add_card_placeholder_brand)
     )
 
-    val typeLabel = if (isPhysical) "Físico" else "Virtual"
+    val typeLabel = stringResource(
+        if (isPhysical) R.string.common_physical else R.string.common_virtual
+    )
     val canConfirm = !isPhysical || previewCard != null
     val roundedButtonShape = RoundedCornerShape(12.dp)
 
@@ -121,7 +126,7 @@ fun AddCardScreen(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 TopAppBar(
-                    title = { Text("Adicionar cartão $typeLabel") },
+                    title = { Text(stringResource(R.string.add_card_title, typeLabel)) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -130,7 +135,7 @@ fun AddCardScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Voltar"
+                                contentDescription = stringResource(R.string.common_back)
                             )
                         }
                     }
@@ -146,16 +151,21 @@ fun AddCardScreen(
                         enabled = canConfirm,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = GreenPrimary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            contentColor = Color.White,
                             disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+                            disabledContentColor = Color.White.copy(alpha = 0.5f),
                         )
                     ) {
-                        Text("Confirmar")
+                        Text(
+                            text = stringResource(R.string.common_confirm),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
@@ -180,7 +190,7 @@ fun AddCardScreen(
 
                 item {
                     Text(
-                        text = "Dados do cartao",
+                        text = stringResource(R.string.add_card_data_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -194,12 +204,12 @@ fun AddCardScreen(
                         ReadOnlyField(
                             modifier = Modifier.weight(1f),
                             value = formatCardNumber(displayCard.number),
-                            label = "Número"
+                            label = stringResource(R.string.add_card_label_number)
                         )
                         ReadOnlyField(
                             modifier = Modifier.weight(0.5f),
                             value = displayCard.cvv,
-                            label = "CVV"
+                            label = stringResource(R.string.add_card_label_cvv)
                         )
                     }
                 }
@@ -212,12 +222,12 @@ fun AddCardScreen(
                         ReadOnlyField(
                             modifier = Modifier.weight(1f),
                             value = displayCard.expiration,
-                            label = "Validade"
+                            label = stringResource(R.string.add_card_label_expiration)
                         )
                         ReadOnlyField(
                             modifier = Modifier.weight(1f),
                             value = displayCard.brand,
-                            label = "Bandeira"
+                            label = stringResource(R.string.add_card_label_brand)
                         )
                     }
                 }
@@ -236,11 +246,11 @@ fun AddCardScreen(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.scan_card),
-                                contentDescription = "Escanear cartão",
+                                contentDescription = stringResource(R.string.add_card_scan),
                                 tint = GreenSecondary
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Escanear novamente")
+                            Text(stringResource(R.string.add_card_scan_again))
                         }
                     }
                 }

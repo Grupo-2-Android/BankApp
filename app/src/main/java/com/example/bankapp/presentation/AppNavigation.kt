@@ -1,5 +1,6 @@
 package com.example.bankapp.presentation
 
+import android.app.Application
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,8 +27,8 @@ import com.example.bankapp.presentation.screens.portfolio.SellQuantityScreen
 import com.example.bankapp.presentation.screens.TransactionHistoryScreen
 import com.example.bankapp.presentation.viewmodels.BuyEvent
 import com.example.bankapp.presentation.viewmodels.DashboardViewModel
+import com.example.bankapp.presentation.viewmodels.CardManagementViewModel
 import com.example.bankapp.presentation.viewmodels.TransactionHistoryViewModel
-import com.example.bankapp.presentation.viewmodels.cards.CardManagementViewModel
 import com.example.bankapp.presentation.viewmodels.CryptoViewModel
 import com.example.bankapp.presentation.viewmodels.MyPortfolioViewModel
 import com.example.bankapp.presentation.viewmodels.SaleEvent
@@ -39,7 +40,9 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
     val context = LocalContext.current
     val userPreferences = remember { UserPreferences(context) }
     val database = remember { AppDatabase.getDatabase(context) }
-    val factory = remember { ViewModelFactory(userPreferences, database) }
+    val factory = remember {
+        ViewModelFactory(context.applicationContext as Application, userPreferences, database)
+    }
 
     val cryptoViewModel: CryptoViewModel = viewModel(factory = factory)
     val portfolioViewModel: MyPortfolioViewModel = viewModel(factory = factory)
@@ -115,6 +118,7 @@ fun AppNavigation(snackbarHostState: SnackbarHostState) {
         composable("crypto_list") {
             CryptoListScreen(
                 viewModel = cryptoViewModel,
+                onBack = { navController.popBackStack() },
                 onCryptoClick = { cryptoId -> navController.navigate("crypto_detail/$cryptoId") }
             )
         }
