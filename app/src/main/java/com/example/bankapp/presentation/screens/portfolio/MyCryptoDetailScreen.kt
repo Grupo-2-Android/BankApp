@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,14 +64,19 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
                 onClick = onNavigateToSellQuantity,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .height(48.dp),
                 shape = roundedButtonShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = GreenPrimary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = Color.White
                 )
             ) {
-                Text(stringResource(R.string.sell_action))
+                Text(
+                    text = stringResource(R.string.sell_action),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
         }
     ) { padding ->

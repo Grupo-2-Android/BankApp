@@ -226,12 +226,7 @@ fun DashboardScreen(
             },
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.common_dashboard),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    },
+                    title = {},
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -301,10 +296,10 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("crypto_list") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp)
 
@@ -320,13 +315,12 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("my_cryptos") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp)
-
                 ) {
                     Text(
                         text = stringResource(R.string.common_my_cryptos),
@@ -339,10 +333,10 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("cards") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -357,10 +351,10 @@ fun DashboardScreen(
 
                 Button(
                     onClick = { navController.navigate("transaction_history") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {

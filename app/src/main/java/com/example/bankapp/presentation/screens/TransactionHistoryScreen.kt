@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.example.bankapp.R
 import com.example.bankapp.data.local.room.entities.Transaction
 import com.example.bankapp.presentation.theme.GreenPrimary
+import com.example.bankapp.presentation.theme.RedDelete
 import com.example.bankapp.presentation.viewmodels.TransactionHistoryViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -97,7 +98,7 @@ fun TransactionHistoryScreen(
 @Composable
 fun TransactionItem(transaction: Transaction) {
     val isNegative = transaction.operation == "BUY"
-    val color = if (isNegative) MaterialTheme.colorScheme.error else GreenPrimary
+    val color = if (isNegative) RedDelete else GreenPrimary
     val prefix = if (isNegative) "-" else "+"
     val datePattern = stringResource(R.string.transaction_history_date_pattern)
 

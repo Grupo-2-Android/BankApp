@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -148,11 +149,11 @@ fun BuyQuantityScreen(
                         viewModel.setBuyAmount(qty)
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = roundedButtonShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = GreenPrimary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = Color.White
                 )
             ) {
                 Text(

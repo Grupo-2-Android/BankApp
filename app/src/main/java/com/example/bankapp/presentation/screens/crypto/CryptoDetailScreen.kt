@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -82,14 +84,19 @@ fun CryptoDetailScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .height(48.dp),
                     shape = roundedButtonShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = Color.White
                     )
                 ) {
-                    Text(stringResource(R.string.crypto_buy))
+                    Text(
+                        text = stringResource(R.string.crypto_buy),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -142,13 +149,18 @@ fun CryptoDetailScreen(
                                 Spacer(modifier = Modifier.size(width = 0.dp, height = 8.dp))
                                 Button(
                                     onClick = { viewModel.fetchCryptoDetail(crypto.symbol) },
+                                    modifier = Modifier.fillMaxWidth().height(48.dp),
                                     shape = roundedButtonShape,
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = GreenPrimary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                        contentColor = Color.White
                                     )
                                 ) {
-                                    Text(stringResource(R.string.crypto_try_again))
+                                    Text(
+                                        text = stringResource(R.string.crypto_try_again),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
                                 }
                             }
                         }

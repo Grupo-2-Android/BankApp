@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -252,20 +253,20 @@ fun LoginScreen(
                                     viewModel.login(username, password)
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
                             enabled = loginState !is LoginStatus.Loading,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = GreenPrimary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                contentColor = Color.White,
                                 disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
-                                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                                disabledContentColor = Color.White.copy(alpha = 0.5f)
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             if (loginState is LoginStatus.Loading) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    color = Color.White,
                                     strokeWidth = 2.dp
                                 )
                             } else {

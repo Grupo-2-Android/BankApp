@@ -49,7 +49,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.br.scan_card.CreditCardData
 import com.br.scan_card.ScanCardActivity
 import com.example.bankapp.R
@@ -149,16 +151,21 @@ fun AddCardScreen(
                         enabled = canConfirm,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = GreenPrimary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            contentColor = Color.White,
                             disabledContainerColor = GreenPrimary.copy(alpha = 0.5f),
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+                            disabledContentColor = Color.White.copy(alpha = 0.5f),
                         )
                     ) {
-                        Text(stringResource(R.string.common_confirm))
+                        Text(
+                            text = stringResource(R.string.common_confirm),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }

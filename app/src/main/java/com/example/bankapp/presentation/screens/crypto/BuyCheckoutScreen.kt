@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -136,14 +137,14 @@ fun BuyCheckoutScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp),
+                    .height(48.dp),
                 shape = roundedButtonShape,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = GreenPrimary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = Color.White
                 )
             ) {
-                Text(stringResource(R.string.buy_confirm), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(stringResource(R.string.buy_confirm), fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
     }

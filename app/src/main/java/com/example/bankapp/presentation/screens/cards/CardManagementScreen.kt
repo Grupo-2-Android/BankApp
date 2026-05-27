@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,8 +51,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.bankapp.R
 import com.example.bankapp.presentation.theme.GreenPrimary
@@ -132,28 +135,32 @@ fun CardManagementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (cards.size < 2) {
                     Button(
                         onClick = { showAddCardBottomSheet = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = GreenPrimary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            contentColor = Color.White
                         )
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(stringResource(R.string.cards_add))
+                        Text(
+                            text = stringResource(R.string.cards_add),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
 
                 if (cards.isNotEmpty()) {
                     OutlinedButton(
                         onClick = { showDeleteCardBottomSheet = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = RedDelete),
                         border = BorderStroke(1.dp, RedDelete)
@@ -224,14 +231,18 @@ fun CardManagementScreen(
                             navigateToAddCardWithPermission(CardManagementViewModel.TYPE_VIRTUAL)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = VirtualCardColor,
                         contentColor = Color.White
                     ),
                     shape = roundedButtonShape
                 ) {
-                    Text(stringResource(R.string.common_virtual))
+                    Text(
+                        text = stringResource(R.string.common_virtual),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
 
                 Button(
@@ -242,14 +253,18 @@ fun CardManagementScreen(
                             navigateToAddCardWithPermission(CardManagementViewModel.TYPE_PHYSICAL)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PhysicalCardColor,
                         contentColor = Color.White
                     ),
                     shape = roundedButtonShape
                 ) {
-                    Text(stringResource(R.string.common_physical))
+                    Text(
+                        text = stringResource(R.string.common_physical),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -290,7 +305,7 @@ fun CardManagementScreen(
                         onClick = {
                             pendingDeleteCard = card
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = roundedButtonShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = backgroundColor,
