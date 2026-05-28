@@ -149,19 +149,19 @@ Esse modelo reduz acoplamento direto entre UI e infraestrutura, favorecendo evol
 
 ## Screenshots
 
-| Tela                 | Preview                                                            |
-|----------------------|--------------------------------------------------------------------|
-| Login                | ![Login](docs/screenshots/login.png)                               |
-| Dashboard            | ![Dashboard](docs/screenshots/dashboard.png)                       |
-| Criptomoedas         | ![Criptomoedas](docs/screenshots/criptomoedas.png)                 |
-| Detalhes de Cripto   | ![Detalhes de Cripto](docs/screenshots/detalhes_criptomoeda.png)   |
-| Comprar Cripto       | ![Comprar Cripto](docs/screenshots/compra_cripto.png)              |
-| Resumo Compra Cripto | ![Resumo Compra Cripto](docs/screenshots/resumo_compra_cripto.png) |
-| Minhas Criptos       | ![Minhas Criptos](docs/screenshots/minhas_criptos.png)             |
-| Vender Cripto        | ![Vender Cripto](docs/screenshots/venda_cripto.png)                |
-| Resumo Venda Cripto  | ![Resumo Venda Cripto](docs/screenshots/resumo_venda_cripto.png)   |
-| Cartões              | ![Cartões](docs/screenshots/cartoes.png)                           |
-| Adicionar Cartão     | ![Adicionar Cartão](docs/screenshots/adicionar_cartao.png)         |
-| Extrato              | ![Extrato](docs/screenshots/extrato.png)                           |
+| Tela                 | Preview |
+|----------------------|---------|
+| Login                | <img src="docs/screenshots/login.png" alt="Login" width="220" /> |
+| Dashboard            | <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="220" /> |
+| Criptomoedas         | <img src="docs/screenshots/criptomoedas.png" alt="Criptomoedas" width="220" /> |
+| Detalhes de Cripto   | <img src="docs/screenshots/detalhes_criptomoeda.png" alt="Detalhes de Cripto" width="220" /> |
+| Comprar Cripto       | <img src="docs/screenshots/compra_cripto.png" alt="Comprar Cripto" width="220" /> |
+| Resumo Compra Cripto | <img src="docs/screenshots/resumo_compra_cripto.png" alt="Resumo Compra Cripto" width="220" /> |
+| Minhas Criptos       | <img src="docs/screenshots/minhas_criptos.png" alt="Minhas Criptos" width="220" /> |
+| Vender Cripto        | <img src="docs/screenshots/venda_cripto.png" alt="Vender Cripto" width="220" /> |
+| Resumo Venda Cripto  | <img src="docs/screenshots/resumo_venda_cripto.png" alt="Resumo Venda Cripto" width="220" /> |
+| Cartões              | <img src="docs/screenshots/cartoes.png" alt="Cartões" width="220" /> |
+| Adicionar Cartão     | <img src="docs/screenshots/adicionar_cartao.png" alt="Adicionar Cartão" width="220" /> |
+| Extrato              | <img src="docs/screenshots/extrato.png" alt="Extrato" width="220" /> |
 
 ---
