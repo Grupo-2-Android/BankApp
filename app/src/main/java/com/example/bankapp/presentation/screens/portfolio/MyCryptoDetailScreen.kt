@@ -87,7 +87,7 @@ fun MyCryptoDetailScreen(viewModel: MyPortfolioViewModel, onBack: () -> Unit, on
                 .padding(16.dp)
         ) {
             Text(
-                stringResource(R.string.portfolio_position, owned.cryptoInfo.symbol),
+                stringResource(R.string.portfolio_cryptocurrency, owned.cryptoInfo.symbol),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold

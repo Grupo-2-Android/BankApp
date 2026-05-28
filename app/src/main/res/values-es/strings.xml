@@ -106,7 +106,7 @@
     <string name="sell_insufficient_balance">Saldo insuficiente</string>
     <string name="sell_continue_to_summary">Continuar al Resumen</string>
 
-    <string name="portfolio_position">Tu posición: %1$s</string>
+    <string name="portfolio_cryptocurrency">Criptomoneda: %1$s</string>
     <string name="portfolio_wallet_quantity">Cantidad en Cartera</string>
     <string name="portfolio_estimated_value_brl">Valor Estimado Actual (BRL)</string>
     <string name="portfolio_quantity_short">Cant: %1$s</string>

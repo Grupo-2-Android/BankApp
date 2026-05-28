@@ -149,12 +149,19 @@ Esse modelo reduz acoplamento direto entre UI e infraestrutura, favorecendo evol
 
 ## Screenshots
 
-| Tela         | Preview                                      |
-|--------------|----------------------------------------------|
-| Home         | ![Login](docs/screenshots/login.png)         |
-| Home         | ![Home](docs/screenshots/home.png)           |
-| Cartões      | ![Cartões](docs/screenshots/cartoes.png)     |
-| Criptomoedas | ![Criptomoedas](docs/screenshots/crypto.png) |
-| Extrato      | ![Extrato](docs/screenshots/extrato.png)     |
+| Tela                 | Preview                                                            |
+|----------------------|--------------------------------------------------------------------|
+| Login                | ![Login](docs/screenshots/login.png)                               |
+| Dashboard            | ![Dashboard](docs/screenshots/dashboard.png)                       |
+| Criptomoedas         | ![Criptomoedas](docs/screenshots/criptomoedas.png)                 |
+| Detalhes de Cripto   | ![Detalhes de Cripto](docs/screenshots/detalhes_criptomoeda.png)   |
+| Comprar Cripto       | ![Comprar Cripto](docs/screenshots/compra_cripto.png)              |
+| Resumo Compra Cripto | ![Resumo Compra Cripto](docs/screenshots/resumo_compra_cripto.png) |
+| Minhas Criptos       | ![Minhas Criptos](docs/screenshots/minhas_criptos.png)             |
+| Vender Cripto        | ![Vender Cripto](docs/screenshots/venda_cripto.png)                |
+| Resumo Venda Cripto  | ![Resumo Venda Cripto](docs/screenshots/resumo_venda_cripto.png)   |
+| Cartões              | ![Cartões](docs/screenshots/cartoes.png)                           |
+| Adicionar Cartão     | ![Adicionar Cartão](docs/screenshots/adicionar_cartao.png)         |
+| Extrato              | ![Extrato](docs/screenshots/extrato.png)                           |
 
 ---
